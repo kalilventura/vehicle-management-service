@@ -17,4 +17,5 @@ Exceptions are acceptable depending on the circumstances (critical bug fixes tha
 
 ### Added
 
+- added dockerfile support
 - added project structure
