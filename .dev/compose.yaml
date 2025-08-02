@@ -1,0 +1,15 @@
+services:
+  vehicle-management:
+    container_name: vehicle_api
+    env_file:
+      - .env
+    build:
+      context: ../.
+    ports:
+      - "${APP_PORT}:${APP_PORT}"
+    networks:
+      - management-network
+
+networks:
+  management-network:
+    driver: bridge
