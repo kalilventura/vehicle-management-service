@@ -1,4 +1,4 @@
-package controllers
+package commands
 
 import (
 	"github.com/google/wire"
@@ -6,5 +6,6 @@ import (
 
 //nolint:gochecknoglobals // requirement for container
 var Container = wire.NewSet(
-	NewSaveVehiclesController,
+	NewSaveVehicleCommand,
+	wire.Bind(new(SaveVehicle), new(*SaveVehicleCommand)),
 )

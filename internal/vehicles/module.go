@@ -9,7 +9,7 @@ type Module struct {
 	vehiclesControllers []entities.Controller
 }
 
-func NewModule(listController *controllers.GetVehiclesController) *Module {
+func NewModule(listController *controllers.SaveVehiclesController) *Module {
 	vehiclesControllers := []entities.Controller{
 		listController,
 	}

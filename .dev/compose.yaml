@@ -1,4 +1,24 @@
 services:
+  vehicle-database:
+    container_name: vehicle_database
+    image: postgres:18beta2-alpine3.22
+    restart: on-failure
+    environment:
+      - 'POSTGRES_DB=vehicle_management'
+      - 'POSTGRES_USER=postgres'
+      - 'POSTGRES_PASSWORD=postgres'
+    ports:
+      - "5432:5432"
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    networks:
+      - management-network
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: '2GB'
+
   vehicle-management:
     container_name: vehicle_api
     env_file:
@@ -7,8 +27,18 @@ services:
       context: ../.
     ports:
       - "${APP_PORT}:${APP_PORT}"
+    depends_on:
+      - vehicle-database
     networks:
       - management-network
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: '1GB'
+
+volumes:
+  db-data:
 
 networks:
   management-network:
