@@ -13,11 +13,15 @@ func NewSaveVehicleCommand(repository repositories.VehiclesRepository) *SaveVehi
 	return &SaveVehicleCommand{repository}
 }
 
-func (cmd *SaveVehicleCommand) Execute(vehicle *entities.Vehicle) {
+func (cmd *SaveVehicleCommand) Execute(vehicle *entities.Vehicle, listeners SaveVehicleListeners) {
 	if err := vehicle.IsValid(); err != nil {
+		listeners.OnNotValid(err)
 		return
 	}
+
 	if err := cmd.repository.Save(vehicle); err != nil {
+		listeners.OnInternalServerError(err)
 		return
 	}
+	listeners.OnSuccess(vehicle)
 }

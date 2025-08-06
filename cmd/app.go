@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+
 	"github.com/kalilventura/vehicle-management/internal/shared/domain/entities"
 	"github.com/labstack/echo/v4"
 	logger "github.com/sirupsen/logrus"
