@@ -7,15 +7,14 @@
 package main
 
 import (
-	"os"
-	"strconv"
-
 	"github.com/kalilventura/vehicle-management/internal/shared/domain/entities"
 	"github.com/kalilventura/vehicle-management/internal/shared/infrastructure/configuration"
 	"github.com/kalilventura/vehicle-management/internal/vehicles"
 	"github.com/kalilventura/vehicle-management/internal/vehicles/domain/commands"
 	"github.com/kalilventura/vehicle-management/internal/vehicles/infrastructure/controllers"
 	"github.com/kalilventura/vehicle-management/internal/vehicles/infrastructure/repositories"
+	"os"
+	"strconv"
 )
 
 // Injectors from wire.go:
@@ -26,7 +25,9 @@ func injectModules() []entities.HTTPModule {
 	gormVehiclesRepository := repositories.NewGormVehiclesRepository(db)
 	saveVehicleCommand := commands.NewSaveVehicleCommand(gormVehiclesRepository)
 	saveVehiclesController := controllers.NewSaveVehiclesController(saveVehicleCommand)
-	module := vehicles.NewModule(saveVehiclesController)
+	getVehicleByIDCommand := commands.NewGetVehicleByIDCommand(gormVehiclesRepository)
+	getVehicleByIdController := controllers.NewGetVehicleByIdController(getVehicleByIDCommand)
+	module := vehicles.NewModule(saveVehiclesController, getVehicleByIdController)
 	v := newModules(module)
 	return v
 }

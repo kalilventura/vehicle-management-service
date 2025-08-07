@@ -9,9 +9,13 @@ type Module struct {
 	vehiclesControllers []entities.Controller
 }
 
-func NewModule(listController *controllers.SaveVehiclesController) *Module {
+func NewModule(
+	saveController *controllers.SaveVehiclesController,
+	getController *controllers.GetVehicleByIdController,
+) *Module {
 	vehiclesControllers := []entities.Controller{
-		listController,
+		saveController,
+		getController,
 	}
 	return &Module{vehiclesControllers}
 }
