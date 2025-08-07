@@ -17,5 +17,10 @@ Exceptions are acceptable depending on the circumstances (critical bug fixes tha
 
 ### Added
 
+- added a new resource `POST /v1/vehicles` to create a new vehicle
 - added dockerfile support
 - added project structure
+
+### Fixed
+
+- fixed `golangci-lint` execution

@@ -3,12 +3,13 @@
 package main
 
 import (
+	"os"
+	"strconv"
+
 	"github.com/google/wire"
 	"github.com/kalilventura/vehicle-management/internal/shared/domain/entities"
 	"github.com/kalilventura/vehicle-management/internal/shared/infrastructure/configuration"
 	"github.com/kalilventura/vehicle-management/internal/vehicles"
-	"os"
-	"strconv"
 )
 
 func injectModules() []entities.HTTPModule {

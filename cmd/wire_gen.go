@@ -7,14 +7,15 @@
 package main
 
 import (
+	"os"
+	"strconv"
+
 	"github.com/kalilventura/vehicle-management/internal/shared/domain/entities"
 	"github.com/kalilventura/vehicle-management/internal/shared/infrastructure/configuration"
 	"github.com/kalilventura/vehicle-management/internal/vehicles"
 	"github.com/kalilventura/vehicle-management/internal/vehicles/domain/commands"
 	"github.com/kalilventura/vehicle-management/internal/vehicles/infrastructure/controllers"
 	"github.com/kalilventura/vehicle-management/internal/vehicles/infrastructure/repositories"
-	"os"
-	"strconv"
 )
 
 // Injectors from wire.go:
