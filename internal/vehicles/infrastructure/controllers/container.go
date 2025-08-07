@@ -7,4 +7,5 @@ import (
 //nolint:gochecknoglobals // requirement for container
 var Container = wire.NewSet(
 	NewSaveVehiclesController,
+	NewGetVehicleByIdController,
 )

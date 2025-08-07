@@ -8,4 +8,6 @@ import (
 var Container = wire.NewSet(
 	NewSaveVehicleCommand,
 	wire.Bind(new(SaveVehicle), new(*SaveVehicleCommand)),
+	NewGetVehicleByIDCommand,
+	wire.Bind(new(GetVehicleByID), new(*GetVehicleByIDCommand)),
 )
