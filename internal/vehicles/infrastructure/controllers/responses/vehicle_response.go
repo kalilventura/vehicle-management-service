@@ -6,6 +6,8 @@ import (
 	"github.com/kalilventura/vehicle-management/internal/vehicles/domain/entities"
 )
 
+// VehicleResponse
+// @Description Represents a vehicle
 type VehicleResponse struct {
 	ID                 string     `json:"id"`
 	Brand              string     `json:"brand"`
@@ -35,7 +37,7 @@ type VehicleResponse struct {
 	Engine             string     `json:"engine"`
 	CreatedAt          time.Time  `json:"created_at,omitempty"`
 	UpdatedAt          *time.Time `json:"updated_at,omitempty"`
-}
+} // @name VehicleResponse
 
 func NewVehicleResponse(vehicle *entities.Vehicle) *VehicleResponse {
 	return &VehicleResponse{

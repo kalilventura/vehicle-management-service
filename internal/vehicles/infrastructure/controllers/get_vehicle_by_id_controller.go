@@ -28,6 +28,18 @@ func (ctrl *GetVehicleByIdController) GetBind() shared.ControllerBind {
 	}
 }
 
+// Execute
+// @Summary Get a vehicle by ID
+// @Description get vehicle by ID
+// @BasePath /v1/vehicles/:id
+// @Tags vehicles
+// @Accept application/json
+// @Produce application/json
+// @Param id path string true "Vehicle ID"
+// @Success 200 {object} controllers.SuccessResponse
+// @Failure 404 {object} controllers.ErrorResponse
+// @Failure 500 {object} controllers.ErrorResponse
+// @Router /v1/vehicles/{id} [get]
 func (ctrl *GetVehicleByIdController) Execute(ectx echo.Context) error {
 	id := ectx.Param("id")
 

@@ -1,0 +1,337 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "Vehicle Management Service.",
+        "title": "Vehicle Management Service",
+        "termsOfService": "http://swagger.io/terms/",
+        "contact": {
+            "name": "API Support",
+            "url": "https://github.com/kalilventura/vehicle-management-service",
+            "email": "kalilventur@gmail.com"
+        },
+        "license": {
+            "name": "MIT License",
+            "url": "https://opensource.org/license/mit"
+        },
+        "version": "1.0"
+    },
+    "paths": {
+        "/v1/vehicles": {
+            "get": {
+                "description": "list vehicles by criteria",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "vehicles"
+                ],
+                "summary": "List vehicles by criteria",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/PaginatedResponse-VehicleViewResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Save a new vehicle",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "vehicles"
+                ],
+                "summary": "Save a new vehicle",
+                "parameters": [
+                    {
+                        "description": "Request body",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/CreateVehicleRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/SuccessResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/v1/vehicles/{id}": {
+            "get": {
+                "description": "get vehicle by ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "vehicles"
+                ],
+                "summary": "Get a vehicle by ID",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Vehicle ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/SuccessResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/ErrorResponse"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "CreateVehicleRequest": {
+            "description": "Object that represents a vehicle",
+            "type": "object",
+            "required": [
+                "bodyType",
+                "brand",
+                "color",
+                "condition",
+                "doors",
+                "engine",
+                "fuelType",
+                "model",
+                "price",
+                "transmission",
+                "year"
+            ],
+            "properties": {
+                "bodyType": {
+                    "type": "string",
+                    "maxLength": 30
+                },
+                "brand": {
+                    "type": "string",
+                    "maxLength": 30
+                },
+                "color": {
+                    "type": "string",
+                    "maxLength": 30
+                },
+                "condition": {
+                    "type": "string",
+                    "enum": [
+                        "new",
+                        "used",
+                        "demonstration"
+                    ]
+                },
+                "description": {
+                    "type": "string"
+                },
+                "doors": {
+                    "type": "integer",
+                    "maximum": 5,
+                    "minimum": 2
+                },
+                "engine": {
+                    "type": "string"
+                },
+                "fuelType": {
+                    "type": "string",
+                    "maxLength": 30
+                },
+                "hasAbsBrakes": {
+                    "type": "boolean"
+                },
+                "hasAirConditioning": {
+                    "type": "boolean"
+                },
+                "hasAirbag": {
+                    "type": "boolean"
+                },
+                "hasAlarm": {
+                    "type": "boolean"
+                },
+                "hasMultimedia": {
+                    "type": "boolean"
+                },
+                "hasParkingSensors": {
+                    "type": "boolean"
+                },
+                "hasPowerLocks": {
+                    "type": "boolean"
+                },
+                "hasPowerSteering": {
+                    "type": "boolean"
+                },
+                "hasPowerWindows": {
+                    "type": "boolean"
+                },
+                "hasRearCamera": {
+                    "type": "boolean"
+                },
+                "hasTractionControl": {
+                    "type": "boolean"
+                },
+                "mileage": {
+                    "type": "integer",
+                    "minimum": 0
+                },
+                "model": {
+                    "type": "string",
+                    "maxLength": 30
+                },
+                "price": {
+                    "type": "number",
+                    "minimum": 0
+                },
+                "status": {
+                    "type": "string",
+                    "enum": [
+                        "available",
+                        "reserved",
+                        "sold",
+                        "maintenance"
+                    ]
+                },
+                "transmission": {
+                    "type": "string",
+                    "maxLength": 30
+                },
+                "year": {
+                    "type": "integer",
+                    "minimum": 1900
+                }
+            }
+        },
+        "ErrorResponse": {
+            "type": "object",
+            "properties": {
+                "details": {},
+                "error": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "integer"
+                }
+            }
+        },
+        "PaginatedResponse-VehicleViewResponse": {
+            "type": "object",
+            "properties": {
+                "content": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/VehicleViewResponse"
+                    }
+                },
+                "first": {
+                    "type": "boolean"
+                },
+                "last": {
+                    "type": "boolean"
+                },
+                "numberOfElements": {
+                    "type": "integer"
+                },
+                "pageNumber": {
+                    "type": "integer"
+                },
+                "pageSize": {
+                    "type": "integer"
+                },
+                "totalElements": {
+                    "type": "integer"
+                },
+                "totalPages": {
+                    "type": "integer"
+                }
+            }
+        },
+        "SuccessResponse": {
+            "description": "Object that represents a success response",
+            "type": "object",
+            "properties": {
+                "data": {},
+                "message": {
+                    "type": "string"
+                },
+                "meta": {},
+                "status": {
+                    "type": "integer"
+                }
+            }
+        },
+        "VehicleViewResponse": {
+            "description": "basic Vehicle information",
+            "type": "object",
+            "properties": {
+                "brand": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "mileage": {
+                    "type": "integer"
+                },
+                "model": {
+                    "type": "string"
+                },
+                "price": {
+                    "type": "number"
+                },
+                "year": {
+                    "type": "integer"
+                }
+            }
+        }
+    }
+}

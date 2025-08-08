@@ -16,6 +16,7 @@ migrate:
 .PHONY: build
 build:
 	make wire
+	make swagger
 	go mod tidy
 	mkdir -p bin && go build -o ./bin -v ./...
 
@@ -23,6 +24,11 @@ build:
 wire:
 	go install github.com/google/wire/cmd/wire@latest
 	cd cmd; wire
+
+.PHONY: swagger
+swagger:
+	go install github.com/swaggo/swag/cmd/swag@latest
+	swag init -g ./cmd/main.go --parseDependency -o ./cmd/docs
 
 .PHONY: test
 test:
