@@ -1,0 +1,233 @@
+definitions:
+  CreateVehicleRequest:
+    description: Object that represents a vehicle
+    properties:
+      bodyType:
+        maxLength: 30
+        type: string
+      brand:
+        maxLength: 30
+        type: string
+      color:
+        maxLength: 30
+        type: string
+      condition:
+        enum:
+        - new
+        - used
+        - demonstration
+        type: string
+      description:
+        type: string
+      doors:
+        maximum: 5
+        minimum: 2
+        type: integer
+      engine:
+        type: string
+      fuelType:
+        maxLength: 30
+        type: string
+      hasAbsBrakes:
+        type: boolean
+      hasAirConditioning:
+        type: boolean
+      hasAirbag:
+        type: boolean
+      hasAlarm:
+        type: boolean
+      hasMultimedia:
+        type: boolean
+      hasParkingSensors:
+        type: boolean
+      hasPowerLocks:
+        type: boolean
+      hasPowerSteering:
+        type: boolean
+      hasPowerWindows:
+        type: boolean
+      hasRearCamera:
+        type: boolean
+      hasTractionControl:
+        type: boolean
+      mileage:
+        minimum: 0
+        type: integer
+      model:
+        maxLength: 30
+        type: string
+      price:
+        minimum: 0
+        type: number
+      status:
+        enum:
+        - available
+        - reserved
+        - sold
+        - maintenance
+        type: string
+      transmission:
+        maxLength: 30
+        type: string
+      year:
+        minimum: 1900
+        type: integer
+    required:
+    - bodyType
+    - brand
+    - color
+    - condition
+    - doors
+    - engine
+    - fuelType
+    - model
+    - price
+    - transmission
+    - year
+    type: object
+  ErrorResponse:
+    properties:
+      details: {}
+      error:
+        type: string
+      status:
+        type: integer
+    type: object
+  PaginatedResponse-VehicleViewResponse:
+    properties:
+      content:
+        items:
+          $ref: '#/definitions/VehicleViewResponse'
+        type: array
+      first:
+        type: boolean
+      last:
+        type: boolean
+      numberOfElements:
+        type: integer
+      pageNumber:
+        type: integer
+      pageSize:
+        type: integer
+      totalElements:
+        type: integer
+      totalPages:
+        type: integer
+    type: object
+  SuccessResponse:
+    description: Object that represents a success response
+    properties:
+      data: {}
+      message:
+        type: string
+      meta: {}
+      status:
+        type: integer
+    type: object
+  VehicleViewResponse:
+    description: basic Vehicle information
+    properties:
+      brand:
+        type: string
+      id:
+        type: string
+      mileage:
+        type: integer
+      model:
+        type: string
+      price:
+        type: number
+      year:
+        type: integer
+    type: object
+info:
+  contact:
+    email: kalilventur@gmail.com
+    name: API Support
+    url: https://github.com/kalilventura/vehicle-management-service
+  description: Vehicle Management Service.
+  license:
+    name: MIT License
+    url: https://opensource.org/license/mit
+  termsOfService: http://swagger.io/terms/
+  title: Vehicle Management Service
+  version: "1.0"
+paths:
+  /v1/vehicles:
+    get:
+      consumes:
+      - application/json
+      description: list vehicles by criteria
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/PaginatedResponse-VehicleViewResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+      summary: List vehicles by criteria
+      tags:
+      - vehicles
+    post:
+      consumes:
+      - application/json
+      description: Save a new vehicle
+      parameters:
+      - description: Request body
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/CreateVehicleRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/SuccessResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+      summary: Save a new vehicle
+      tags:
+      - vehicles
+  /v1/vehicles/{id}:
+    get:
+      consumes:
+      - application/json
+      description: get vehicle by ID
+      parameters:
+      - description: Vehicle ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/SuccessResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+      summary: Get a vehicle by ID
+      tags:
+      - vehicles
+swagger: "2.0"

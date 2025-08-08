@@ -29,6 +29,16 @@ func (ctrl *ListVehiclesController) GetBind() shared.ControllerBind {
 	}
 }
 
+// Execute
+// @Summary List vehicles by criteria
+// @Description list vehicles by criteria
+// @BasePath /v1/vehicles
+// @Tags vehicles
+// @Accept application/json
+// @Produce application/json
+// @Success 200 {object} controllers.PaginatedResponse[responses.VehicleViewResponse]
+// @Failure 500 {object} controllers.ErrorResponse
+// @Router /v1/vehicles [get]
 func (ctrl *ListVehiclesController) Execute(ectx echo.Context) error {
 	searchParams, err := ctrl.GetQueryParams(ectx)
 	if err != nil {
@@ -69,10 +79,10 @@ func (ctrl *ListVehiclesController) GetQueryParams(ectx echo.Context) (*requests
 
 func (ctrl *ListVehiclesController) onSuccess(
 	ectx echo.Context, vehicles *shared.PaginatedEntity[entities.Vehicle]) error {
-	var responseList []responses.VehicleResponse
+	var responseList []responses.VehicleViewResponse
 	for _, vehicle := range vehicles.Content {
-		entry := responses.NewVehicleResponse(&vehicle)
-		responseList = append(responseList, *entry)
+		entry := responses.NewVehicleViewResponse(vehicle)
+		responseList = append(responseList, entry)
 	}
 
 	response := controllers.NewPaginatedResponse(responseList, vehicles.Pagination)

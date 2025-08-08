@@ -13,15 +13,15 @@ import (
 	logger "github.com/sirupsen/logrus"
 )
 
-type SaveVehiclesController struct {
+type SaveVehicleController struct {
 	command commands.SaveVehicle
 }
 
-func NewSaveVehiclesController(command commands.SaveVehicle) *SaveVehiclesController {
-	return &SaveVehiclesController{command}
+func NewSaveVehicleController(command commands.SaveVehicle) *SaveVehicleController {
+	return &SaveVehicleController{command}
 }
 
-func (ctrl *SaveVehiclesController) GetBind() shared.ControllerBind {
+func (ctrl *SaveVehicleController) GetBind() shared.ControllerBind {
 	return shared.ControllerBind{
 		Method:       http.MethodPost,
 		Version:      "v1",
@@ -29,7 +29,19 @@ func (ctrl *SaveVehiclesController) GetBind() shared.ControllerBind {
 	}
 }
 
-func (ctrl *SaveVehiclesController) Execute(ectx echo.Context) error {
+// Execute godoc
+// @Summary Save a new vehicle
+// @Description Save a new vehicle
+// @BasePath /v1/vehicles
+// @Tags vehicles
+// @Accept application/json
+// @Produce application/json
+// @Param request body requests.CreateVehicleRequest true "Request body"
+// @Success 200 {object} controllers.SuccessResponse
+// @Failure 400 {object} controllers.ErrorResponse
+// @Failure 500 {object} controllers.ErrorResponse
+// @Router /v1/vehicles [post]
+func (ctrl *SaveVehicleController) Execute(ectx echo.Context) error {
 	vehicleRequest := new(requests.CreateVehicleRequest)
 	if err := ectx.Bind(vehicleRequest); err != nil {
 		return ctrl.onInvalid(ectx, err)
@@ -56,7 +68,7 @@ func (ctrl *SaveVehiclesController) Execute(ectx echo.Context) error {
 	return handler
 }
 
-func (ctrl *SaveVehiclesController) onSuccess(ectx echo.Context, vehicle *entities.Vehicle) error {
+func (ctrl *SaveVehicleController) onSuccess(ectx echo.Context, vehicle *entities.Vehicle) error {
 	response := controllers.NewSuccessResponse(http.StatusCreated, responses.NewVehicleResponse(vehicle))
 
 	ectx.Response().Header().Set(echo.HeaderLocation, "/v1/vehicles/"+vehicle.ID)
@@ -65,7 +77,7 @@ func (ctrl *SaveVehiclesController) onSuccess(ectx echo.Context, vehicle *entiti
 	return ectx.JSON(http.StatusCreated, response)
 }
 
-func (ctrl *SaveVehiclesController) onInvalid(ectx echo.Context, err error) error {
+func (ctrl *SaveVehicleController) onInvalid(ectx echo.Context, err error) error {
 	validationErrors := ctrl.extractValidationErrors(err)
 	response := controllers.NewErrorResponse(
 		http.StatusBadRequest,
@@ -74,7 +86,7 @@ func (ctrl *SaveVehiclesController) onInvalid(ectx echo.Context, err error) erro
 	return ectx.JSON(http.StatusBadRequest, response)
 }
 
-func (ctrl *SaveVehiclesController) onError(ectx echo.Context, err error) error {
+func (ctrl *SaveVehicleController) onError(ectx echo.Context, err error) error {
 	logger.Errorf("Error occured %v", err)
 	response := controllers.NewErrorResponse(
 		http.StatusInternalServerError,
@@ -83,7 +95,7 @@ func (ctrl *SaveVehiclesController) onError(ectx echo.Context, err error) error 
 	return ectx.JSON(http.StatusInternalServerError, response)
 }
 
-func (ctrl *SaveVehiclesController) extractValidationErrors(err error) map[string]string {
+func (ctrl *SaveVehicleController) extractValidationErrors(err error) map[string]string {
 	return map[string]string{
 		"generic": err.Error(),
 	}

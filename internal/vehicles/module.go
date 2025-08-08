@@ -10,7 +10,7 @@ type Module struct {
 }
 
 func NewModule(
-	saveController *controllers.SaveVehiclesController,
+	saveController *controllers.SaveVehicleController,
 	getController *controllers.GetVehicleByIdController,
 	listController *controllers.ListVehiclesController,
 ) *Module {

@@ -17,6 +17,10 @@ import (
 	"strconv"
 )
 
+import (
+	_ "github.com/kalilventura/vehicle-management/cmd/docs"
+)
+
 // Injectors from wire.go:
 
 func injectModules() []entities.HTTPModule {
@@ -24,12 +28,12 @@ func injectModules() []entities.HTTPModule {
 	db := configuration.NewDatabaseClient(databaseSettings)
 	gormVehiclesRepository := repositories.NewGormVehiclesRepository(db)
 	saveVehicleCommand := commands.NewSaveVehicleCommand(gormVehiclesRepository)
-	saveVehiclesController := controllers.NewSaveVehiclesController(saveVehicleCommand)
+	saveVehicleController := controllers.NewSaveVehicleController(saveVehicleCommand)
 	getVehicleByIDCommand := commands.NewGetVehicleByIDCommand(gormVehiclesRepository)
 	getVehicleByIdController := controllers.NewGetVehicleByIdController(getVehicleByIDCommand)
 	listVehiclesCommand := commands.NewListVehiclesCommand(gormVehiclesRepository)
 	listVehiclesController := controllers.NewListVehiclesController(listVehiclesCommand)
-	module := vehicles.NewModule(saveVehiclesController, getVehicleByIdController, listVehiclesController)
+	module := vehicles.NewModule(saveVehicleController, getVehicleByIdController, listVehiclesController)
 	v := newModules(module)
 	return v
 }

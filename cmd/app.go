@@ -3,9 +3,11 @@ package main
 import (
 	"fmt"
 
+	_ "github.com/kalilventura/vehicle-management/cmd/docs" // generated docs
 	"github.com/kalilventura/vehicle-management/internal/shared/domain/entities"
 	"github.com/labstack/echo/v4"
 	logger "github.com/sirupsen/logrus"
+	"github.com/swaggo/echo-swagger" // echo-swagger middleware
 )
 
 func handleRoutes(application *echo.Echo, modules []entities.HTTPModule) {
@@ -27,9 +29,15 @@ func handleRoutes(application *echo.Echo, modules []entities.HTTPModule) {
 	}
 }
 
+func handleSwagger(application *echo.Echo) {
+	logger.Info("registering swagger")
+	application.GET("/swagger/*", echoSwagger.WrapHandler)
+}
+
 func StartServer(modules []entities.HTTPModule, globalSettings *entities.Settings) {
 	application := echo.New()
 	handleRoutes(application, modules)
+	handleSwagger(application)
 
 	port := globalSettings.GetPort()
 	application.Logger.Fatal(application.Start(port))
