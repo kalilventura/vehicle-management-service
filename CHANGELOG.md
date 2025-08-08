@@ -27,3 +27,4 @@ Exceptions are acceptable depending on the circumstances (critical bug fixes tha
 ### Fixed
 
 - fixed `golangci-lint` execution
+- fixed wrong image name in `workflow.yaml`

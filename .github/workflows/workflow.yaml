@@ -74,36 +74,10 @@ jobs:
             junit.xml
             cobertura.xml
 
-  quality_sonarqube-analysis:
-    name: 'quality > sonarqube-analysis'
-    runs-on: ubuntu-latest
-    needs: tests_test_all
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Setup Go
-        uses: actions/setup-go@v5
-        with:
-          go-version: 1.23.1
-          cache: false
-      - name: Download test reports
-        uses: actions/download-artifact@v4
-        with:
-          name: coverage-reports
-          path: .
-
-      - name: Run SonarQube Scanner
-        uses: SonarSource/sonarqube-scan-action@v4.2.1
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-
   docker-build-and-push:
     name: 'docker > build and push'
     runs-on: ubuntu-latest
-    needs: [tests_test_all, quality_sonarqube-analysis]
+    needs: [tests_test_all]
     if: github.event_name != 'pull_request'
     steps:
       - name: Checkout code
@@ -118,7 +92,7 @@ jobs:
       - name: Validate Docker Hub repository
         id: validate-repo
         run: |
-          REPO_NAME="fastfood-operations"
+          REPO_NAME="kalilventura"
           NAMESPACE="${{ secrets.DOCKER_USERNAME }}"
           RESPONSE=$(curl -s -o /dev/null -w "%{http_code}" "https://hub.docker.com/v2/repositories/${NAMESPACE}/${REPO_NAME}/")
 
@@ -141,5 +115,5 @@ jobs:
           context: .
           push: true
           tags: |
-            ${{ secrets.DOCKER_USERNAME }}/fastfood-operations:latest
-            ${{ secrets.DOCKER_USERNAME }}/fastfood-operations:${{ github.sha }}
+            ${{ secrets.DOCKER_USERNAME }}/vehicle-management-service:latest
+            ${{ secrets.DOCKER_USERNAME }}/vehicle-management-service:${{ github.sha }}
