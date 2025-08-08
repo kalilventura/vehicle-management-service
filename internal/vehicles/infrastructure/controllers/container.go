@@ -8,4 +8,5 @@ import (
 var Container = wire.NewSet(
 	NewSaveVehiclesController,
 	NewGetVehicleByIdController,
+	NewListVehiclesController,
 )

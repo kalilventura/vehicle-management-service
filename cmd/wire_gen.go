@@ -27,7 +27,9 @@ func injectModules() []entities.HTTPModule {
 	saveVehiclesController := controllers.NewSaveVehiclesController(saveVehicleCommand)
 	getVehicleByIDCommand := commands.NewGetVehicleByIDCommand(gormVehiclesRepository)
 	getVehicleByIdController := controllers.NewGetVehicleByIdController(getVehicleByIDCommand)
-	module := vehicles.NewModule(saveVehiclesController, getVehicleByIdController)
+	listVehiclesCommand := commands.NewListVehiclesCommand(gormVehiclesRepository)
+	listVehiclesController := controllers.NewListVehiclesController(listVehiclesCommand)
+	module := vehicles.NewModule(saveVehiclesController, getVehicleByIdController, listVehiclesController)
 	v := newModules(module)
 	return v
 }

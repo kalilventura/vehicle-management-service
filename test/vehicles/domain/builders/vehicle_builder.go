@@ -1,6 +1,7 @@
 package builders
 
 import (
+	global "github.com/kalilventura/vehicle-management/internal/shared/domain/entities"
 	"github.com/kalilventura/vehicle-management/internal/vehicles/domain/entities"
 	"github.com/kalilventura/vehicle-management/internal/vehicles/domain/entities/dtos"
 )
@@ -31,4 +32,16 @@ func (b *VehicleBuilder) BuildInvalid() *entities.Vehicle {
 		Condition:     dtos.New,
 		Specification: specification,
 	}
+}
+
+func (b *VehicleBuilder) BuildPagination() *global.PaginatedEntity[entities.Vehicle] {
+	pagination := global.Pagination{}
+	var list []entities.Vehicle
+
+	for range 10 {
+		list = append(list, *b.BuildValid())
+	}
+
+	page := global.NewPaginatedEntity(list, pagination)
+	return &page
 }

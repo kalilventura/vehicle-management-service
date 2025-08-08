@@ -12,10 +12,12 @@ type Module struct {
 func NewModule(
 	saveController *controllers.SaveVehiclesController,
 	getController *controllers.GetVehicleByIdController,
+	listController *controllers.ListVehiclesController,
 ) *Module {
 	vehiclesControllers := []entities.Controller{
 		saveController,
 		getController,
+		listController,
 	}
 	return &Module{vehiclesControllers}
 }
