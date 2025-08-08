@@ -40,20 +40,20 @@ func (ctrl *SaveVehiclesController) Execute(ectx echo.Context) error {
 		return ctrl.onInvalid(ectx, domainErr)
 	}
 
-	var handlerErr error
+	var handler error
 	listeners := commands.SaveVehicleListeners{
 		OnSuccess: func(vehicle *entities.Vehicle) {
-			handlerErr = ctrl.onSuccess(ectx, vehicle)
+			handler = ctrl.onSuccess(ectx, vehicle)
 		},
 		OnNotValid: func(err error) {
-			handlerErr = ctrl.onInvalid(ectx, err)
+			handler = ctrl.onInvalid(ectx, err)
 		},
 		OnInternalServerError: func(err error) {
-			handlerErr = ctrl.onError(ectx, err)
+			handler = ctrl.onError(ectx, err)
 		},
 	}
 	ctrl.command.Execute(entity, listeners)
-	return handlerErr
+	return handler
 }
 
 func (ctrl *SaveVehiclesController) onSuccess(ectx echo.Context, vehicle *entities.Vehicle) error {

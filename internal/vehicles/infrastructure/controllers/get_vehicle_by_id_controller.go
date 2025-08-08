@@ -31,20 +31,20 @@ func (ctrl *GetVehicleByIdController) GetBind() shared.ControllerBind {
 func (ctrl *GetVehicleByIdController) Execute(ectx echo.Context) error {
 	id := ectx.Param("id")
 
-	var handlerErr error
+	var handler error
 	listeners := commands.GetVehicleByIDListeners{
 		OnSuccess: func(vehicle *entities.Vehicle) {
-			handlerErr = ctrl.onSuccess(ectx, vehicle)
+			handler = ctrl.onSuccess(ectx, vehicle)
 		},
 		OnNotFound: func() {
-			handlerErr = ctrl.onNotFound(ectx)
+			handler = ctrl.onNotFound(ectx)
 		},
 		OnInternalServerError: func(err error) {
-			handlerErr = ctrl.onError(ectx, err)
+			handler = ctrl.onError(ectx, err)
 		},
 	}
 	ctrl.command.Execute(id, listeners)
-	return handlerErr
+	return handler
 }
 
 func (ctrl *GetVehicleByIdController) onSuccess(ectx echo.Context, vehicle *entities.Vehicle) error {

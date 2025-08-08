@@ -16,7 +16,7 @@ func TestPrice(t *testing.T) {
 			input float64
 			want  dtos.Price
 		}{
-			{"zero price", 0, dtos.Price(0)},
+			{"lower price", 1, dtos.Price(1)},
 			{"low price", 1000.50, dtos.Price(1000.50)},
 			{"high price", 500000.99, dtos.Price(500000.99)},
 			{"integer price", 25000, dtos.Price(25000)},
@@ -44,6 +44,7 @@ func TestPrice(t *testing.T) {
 			{"negative value", -1.50},
 			{"large negative value", -1000000.99},
 			{"minimum float value", -1.7976931348623157e+308},
+			{"zero value", 0},
 		}
 
 		for _, tt := range tests {
@@ -53,7 +54,7 @@ func TestPrice(t *testing.T) {
 
 				// then
 				assert.Error(t, err)
-				assert.EqualError(t, err, "price cannot be negative")
+				assert.EqualError(t, err, "price cannot be negative and needs to be greater than 0")
 			})
 		}
 	})
@@ -69,28 +70,5 @@ func TestPrice(t *testing.T) {
 		// then
 		assert.Equal(t, testValue, value)
 		assert.IsType(t, 0.0, value)
-	})
-
-	t.Run("should handle edge cases", func(t *testing.T) {
-		t.Run("very small positive value", func(t *testing.T) {
-			// given
-			smallValue := 0.0000001
-
-			// when
-			price, err := dtos.NewPrice(smallValue)
-
-			// then
-			assert.NoError(t, err)
-			assert.Equal(t, smallValue, price.Value())
-		})
-
-		t.Run("zero value", func(t *testing.T) {
-			// given & when
-			price, err := dtos.NewPrice(0)
-
-			// then
-			assert.NoError(t, err)
-			assert.Equal(t, 0.0, price.Value())
-		})
 	})
 }
