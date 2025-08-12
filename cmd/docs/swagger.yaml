@@ -140,6 +140,43 @@ definitions:
       year:
         type: integer
     type: object
+  github_com_kalilventura_vehicle-management_internal_vehicles_infrastructure_controllers_requests.UpdateVehicleRequest:
+    properties:
+      color:
+        type: string
+      condition:
+        type: string
+      description:
+        type: string
+      has_abs_brakes:
+        type: boolean
+      has_air_conditioning:
+        type: boolean
+      has_airbag:
+        type: boolean
+      has_alarm:
+        type: boolean
+      has_multimedia:
+        type: boolean
+      has_parking_sensors:
+        type: boolean
+      has_power_locks:
+        type: boolean
+      has_power_steering:
+        type: boolean
+      has_power_windows:
+        type: boolean
+      has_rear_camera:
+        type: boolean
+      has_traction_control:
+        type: boolean
+      mileage:
+        type: integer
+      price:
+        type: number
+      status:
+        type: string
+    type: object
 info:
   contact:
     email: kalilventur@gmail.com
@@ -199,6 +236,41 @@ paths:
           schema:
             $ref: '#/definitions/ErrorResponse'
       summary: Save a new vehicle
+      tags:
+      - vehicles
+  /v1/vehicles/:id:
+    patch:
+      consumes:
+      - application/json
+      description: Update a vehicle
+      parameters:
+      - description: Vehicle ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Request body
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_kalilventura_vehicle-management_internal_vehicles_infrastructure_controllers_requests.UpdateVehicleRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/SuccessResponse'
+        "400":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+      summary: Update a vehicle
       tags:
       - vehicles
   /v1/vehicles/{id}:

@@ -60,36 +60,6 @@ func (gv GormVehicle) BeforeUpdate(_ *gorm.DB) error {
 	return nil
 }
 
-func FromDomain(vehicle *entities.Vehicle) GormVehicle {
-	return GormVehicle{
-		Price:              vehicle.GetPrice(),
-		Brand:              vehicle.Brand,
-		Model:              vehicle.Model,
-		Color:              vehicle.Color,
-		Status:             vehicle.GetStatus(),
-		Description:        vehicle.Description,
-		Condition:          vehicle.GetCondition(),
-		BodyType:           vehicle.Specification.GetBodyType(),
-		Transmission:       vehicle.Specification.GetTransmission(),
-		FuelType:           vehicle.Specification.GetFuelType(),
-		Mileage:            vehicle.Specification.GetMileage(),
-		Engine:             vehicle.Specification.GetEngine(),
-		Doors:              vehicle.Specification.GetDoors(),
-		Year:               vehicle.GetYear(),
-		HasAirConditioning: vehicle.Features.HasAirConditioning,
-		HasAirbag:          vehicle.Features.HasAirbag,
-		HasAbsBrakes:       vehicle.Features.HasAbsBrakes,
-		HasPowerSteering:   vehicle.Features.HasPowerSteering,
-		HasPowerWindows:    vehicle.Features.HasPowerWindows,
-		HasPowerLocks:      vehicle.Features.HasPowerLocks,
-		HasMultimedia:      vehicle.Features.HasMultimedia,
-		HasAlarm:           vehicle.Features.HasAlarm,
-		HasTractionControl: vehicle.Features.HasTractionControl,
-		HasRearCamera:      vehicle.Features.HasRearCamera,
-		HasParkingSensors:  vehicle.Features.HasParkingSensors,
-	}
-}
-
 func (gv GormVehicle) ToDomain() *entities.Vehicle {
 	features := entities.Features{
 		HasAirConditioning: gv.HasAirConditioning,

@@ -69,3 +69,31 @@ func NewVehicleResponse(vehicle *entities.Vehicle) *VehicleResponse {
 		Engine:             vehicle.Specification.GetEngine(),
 	}
 }
+
+func NewUpdateResponse(vehicle *entities.UpdateVehicleInput) *VehicleResponse {
+	output := new(VehicleResponse)
+	if vehicle.Price != nil {
+		output.Price = vehicle.Price.Value()
+	}
+	if vehicle.Status != nil {
+		output.Status = vehicle.Status.Value()
+	}
+	if vehicle.Condition != nil {
+		output.Condition = vehicle.Condition.Value()
+	}
+
+	if vehicle.Description != nil {
+		output.HasAirConditioning = *vehicle.Features.HasAirConditioning
+		output.HasAirbag = *vehicle.Features.HasAirbag
+		output.HasAbsBrakes = *vehicle.Features.HasAbsBrakes
+		output.HasPowerSteering = *vehicle.Features.HasPowerSteering
+		output.HasPowerWindows = *vehicle.Features.HasPowerWindows
+		output.HasPowerLocks = *vehicle.Features.HasPowerLocks
+		output.HasMultimedia = *vehicle.Features.HasMultimedia
+		output.HasAlarm = *vehicle.Features.HasAlarm
+		output.HasTractionControl = *vehicle.Features.HasTractionControl
+		output.HasRearCamera = *vehicle.Features.HasRearCamera
+		output.HasParkingSensors = *vehicle.Features.HasParkingSensors
+	}
+	return output
+}
