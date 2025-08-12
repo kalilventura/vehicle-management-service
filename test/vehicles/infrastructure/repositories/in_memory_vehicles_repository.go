@@ -30,6 +30,10 @@ func (r *InMemoryVehiclesRepository) Save(_ *entities.Vehicle) error {
 	return r.err
 }
 
+func (r *InMemoryVehiclesRepository) Update(_ *entities.UpdateVehicleInput) error {
+	return r.err
+}
+
 func (r *InMemoryVehiclesRepository) GetByID(_ string) (*entities.Vehicle, error) {
 	if r.vehicles != nil {
 		return &r.vehicles.Content[0], nil

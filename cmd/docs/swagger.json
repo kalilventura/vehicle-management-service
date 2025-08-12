@@ -89,6 +89,59 @@
                 }
             }
         },
+        "/v1/vehicles/:id": {
+            "patch": {
+                "description": "Update a vehicle",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "vehicles"
+                ],
+                "summary": "Update a vehicle",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Vehicle ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Request body",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/github_com_kalilventura_vehicle-management_internal_vehicles_infrastructure_controllers_requests.UpdateVehicleRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/SuccessResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/v1/vehicles/{id}": {
             "get": {
                 "description": "get vehicle by ID",
@@ -330,6 +383,62 @@
                 },
                 "year": {
                     "type": "integer"
+                }
+            }
+        },
+        "github_com_kalilventura_vehicle-management_internal_vehicles_infrastructure_controllers_requests.UpdateVehicleRequest": {
+            "type": "object",
+            "properties": {
+                "color": {
+                    "type": "string"
+                },
+                "condition": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "has_abs_brakes": {
+                    "type": "boolean"
+                },
+                "has_air_conditioning": {
+                    "type": "boolean"
+                },
+                "has_airbag": {
+                    "type": "boolean"
+                },
+                "has_alarm": {
+                    "type": "boolean"
+                },
+                "has_multimedia": {
+                    "type": "boolean"
+                },
+                "has_parking_sensors": {
+                    "type": "boolean"
+                },
+                "has_power_locks": {
+                    "type": "boolean"
+                },
+                "has_power_steering": {
+                    "type": "boolean"
+                },
+                "has_power_windows": {
+                    "type": "boolean"
+                },
+                "has_rear_camera": {
+                    "type": "boolean"
+                },
+                "has_traction_control": {
+                    "type": "boolean"
+                },
+                "mileage": {
+                    "type": "integer"
+                },
+                "price": {
+                    "type": "number"
+                },
+                "status": {
+                    "type": "string"
                 }
             }
         }

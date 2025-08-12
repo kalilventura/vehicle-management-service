@@ -21,6 +21,28 @@ func NewGormVehiclesRepository(client *gorm.DB) *GormVehiclesRepository {
 	return &GormVehiclesRepository{client: client}
 }
 
+func (r *GormVehiclesRepository) Save(vehicle *entities.Vehicle) error {
+	gormEntity := mappers.MapToDomain(vehicle)
+	if err := r.client.Save(&gormEntity).Error; err != nil {
+		return fmt.Errorf("failed to save vehicle. Reason: %w", err)
+	}
+	vehicle.ID = gormEntity.ID
+	return nil
+}
+
+func (r *GormVehiclesRepository) Update(vehicle *entities.UpdateVehicleInput) error {
+	gormEntity := mappers.MapToUpdate(vehicle)
+	err := r.client.
+		Model(models.GormVehicle{}).
+		Where("id = ?", gormEntity.ID).
+		Updates(gormEntity).
+		Error
+	if err != nil {
+		return fmt.Errorf("failed to update vehicle. Reason: %w", err)
+	}
+	return nil
+}
+
 func (r *GormVehiclesRepository) GetByID(ID string) (*entities.Vehicle, error) {
 	vehicle := &models.GormVehicle{}
 	err := r.client.First(vehicle, "id = ?", ID).Error
@@ -31,15 +53,6 @@ func (r *GormVehiclesRepository) GetByID(ID string) (*entities.Vehicle, error) {
 		return nil, fmt.Errorf("failed to find vehicle. Reason: %w", err)
 	}
 	return vehicle.ToDomain(), nil
-}
-
-func (r *GormVehiclesRepository) Save(vehicle *entities.Vehicle) error {
-	gormEntity := models.FromDomain(vehicle)
-	if err := r.client.Save(&gormEntity).Error; err != nil {
-		return fmt.Errorf("failed to save vehicle. Reason: %w", err)
-	}
-	vehicle.ID = gormEntity.ID
-	return nil
 }
 
 func (r *GormVehiclesRepository) FindWithFilters(

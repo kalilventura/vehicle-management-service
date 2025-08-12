@@ -8,6 +8,7 @@ import (
 
 type VehiclesRepository interface {
 	Save(vehicle *entities.Vehicle) error
+	Update(vehicle *entities.UpdateVehicleInput) error
 	GetByID(ID string) (*entities.Vehicle, error)
 	FindWithFilters(input dtos.ListVehiclesInput) (*global.PaginatedEntity[entities.Vehicle], error)
 }

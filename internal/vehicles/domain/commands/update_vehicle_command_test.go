@@ -6,7 +6,6 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/brianvoe/gofakeit/v7"
 	domainerror "github.com/kalilventura/vehicle-management/internal/shared/domain/errors"
 	"github.com/kalilventura/vehicle-management/internal/vehicles/domain/commands"
 	"github.com/kalilventura/vehicle-management/internal/vehicles/domain/entities"
@@ -15,20 +14,21 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestNewGetVehicleByIDCommand(t *testing.T) {
+func TestUpdateVehicleCommand(t *testing.T) {
 	t.Run("should call OnNotFound when there's no vehicle found", func(t *testing.T) {
 		// given
+		input := builders.NewUpdateVehicleInputBuilder().BuildValid()
 		repository := repositories.NewInMemoryVehiclesRepository().WithError(domainerror.ErrRecordNotFound)
-		command := commands.NewGetVehicleByIDCommand(repository)
+		command := commands.NewUpdateVehicleCommand(repository)
 
 		// when
 		var wasCalled bool
-		listeners := commands.GetVehicleByIDListeners{
+		listeners := commands.UpdateVehicleListeners{
 			OnNotFound: func() {
 				wasCalled = true
 			},
 		}
-		command.Execute(gofakeit.UUID(), listeners)
+		command.Execute(input, listeners)
 
 		// then
 		assert.True(t, wasCalled, "OnNotFound was not called")
@@ -36,30 +36,31 @@ func TestNewGetVehicleByIDCommand(t *testing.T) {
 
 	t.Run("should call OnInternalServerError when there's an error to find the vehicle", func(t *testing.T) {
 		// given
+		input := builders.NewUpdateVehicleInputBuilder().BuildValid()
 		repository := repositories.NewInMemoryVehiclesRepository().WithError(errors.New("get vehicle error"))
-		command := commands.NewGetVehicleByIDCommand(repository)
+		command := commands.NewUpdateVehicleCommand(repository)
 
 		// when & then
-		listeners := commands.GetVehicleByIDListeners{
+		listeners := commands.UpdateVehicleListeners{
 			OnInternalServerError: func(err error) {
 				assert.NotNil(t, err, "Error was not returned")
 			},
 		}
-		command.Execute(gofakeit.UUID(), listeners)
+		command.Execute(input, listeners)
 	})
 
-	t.Run("should call OnSuccess when there's a vehicle to show", func(t *testing.T) {
+	t.Run("should call OnSuccess when the vehicle was updated", func(t *testing.T) {
 		// given
-		vehicles := builders.NewVehicleBuilder().BuildPagination()
-		repository := repositories.NewInMemoryVehiclesRepository().WithVehicles(vehicles)
-		command := commands.NewGetVehicleByIDCommand(repository)
+		input := builders.NewUpdateVehicleInputBuilder().BuildValid()
+		repository := repositories.NewInMemoryVehiclesRepository().WithError(errors.New("get vehicle error"))
+		command := commands.NewUpdateVehicleCommand(repository)
 
 		// when & then
-		listeners := commands.GetVehicleByIDListeners{
-			OnSuccess: func(vehicle *entities.Vehicle) {
+		listeners := commands.UpdateVehicleListeners{
+			OnSuccess: func(vehicle *entities.UpdateVehicleInput) {
 				assert.NotNil(t, vehicle, "Vehicle was not returned")
 			},
 		}
-		command.Execute(gofakeit.UUID(), listeners)
+		command.Execute(input, listeners)
 	})
 }

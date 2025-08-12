@@ -17,6 +17,7 @@ Exceptions are acceptable depending on the circumstances (critical bug fixes tha
 
 ### Added
 
+- added a new resource `PATCH /v1/vehicles/:id` to update the vehicle
 - added swagger to improve application documentation
 - added a new resource `GET /v1/vehicles` to list the vehicles
 - added a new resource `GET /v1/vehicles/:id` to get a vehicle by id

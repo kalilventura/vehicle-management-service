@@ -13,11 +13,13 @@ func NewModule(
 	saveController *controllers.SaveVehicleController,
 	getController *controllers.GetVehicleByIdController,
 	listController *controllers.ListVehiclesController,
+	updateController *controllers.UpdateVehicleController,
 ) *Module {
 	vehiclesControllers := []entities.Controller{
 		saveController,
 		getController,
 		listController,
+		updateController,
 	}
 	return &Module{vehiclesControllers}
 }
