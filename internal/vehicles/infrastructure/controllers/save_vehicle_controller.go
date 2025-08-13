@@ -29,7 +29,8 @@ func (ctrl *SaveVehicleController) GetBind() shared.ControllerBind {
 	}
 }
 
-// Execute godoc
+// Execute Save a new vehicle
+//
 // @Summary Save a new vehicle
 // @Description Save a new vehicle
 // @BasePath /v1/vehicles

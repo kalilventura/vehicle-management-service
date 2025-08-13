@@ -52,13 +52,8 @@ func (b *VehicleBuilder) BuildInvalid() *entities.Vehicle {
 }
 
 func (b *VehicleBuilder) BuildPagination() *global.PaginatedEntity[entities.Vehicle] {
+	list := b.BuildMany()
 	pagination := global.Pagination{}
-	var list []entities.Vehicle
-
-	for range 10 {
-		list = append(list, *b.BuildValid())
-	}
-
 	page := global.NewPaginatedEntity(list, pagination)
 	return &page
 }

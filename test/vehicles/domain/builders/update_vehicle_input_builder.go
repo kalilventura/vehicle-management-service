@@ -1,13 +1,14 @@
 package builders
 
-import "github.com/kalilventura/vehicle-management/internal/vehicles/domain/entities"
+import (
+	"github.com/kalilventura/vehicle-management/internal/vehicles/domain/entities"
+	"github.com/kalilventura/vehicle-management/test/shared/domain/builders"
+)
 
-type UpdateVehicleInputBuilder struct{}
+type UpdateVehicleInputBuilder struct {
+	builders.BaseBuilder[entities.UpdateVehicleInput]
+}
 
 func NewUpdateVehicleInputBuilder() *UpdateVehicleInputBuilder {
 	return &UpdateVehicleInputBuilder{}
-}
-
-func (b *UpdateVehicleInputBuilder) BuildValid() *entities.UpdateVehicleInput {
-	return &entities.UpdateVehicleInput{}
 }
