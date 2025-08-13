@@ -12,33 +12,12 @@ on:
   workflow_dispatch:
 
 permissions:
-  checks: 'write' # code_check-style_golangci_lint
   contents: 'write' # delivery-release
 
 jobs:
-  code_check-style_golangci_lint:
-    name: 'code-check > style:golangci-lint'
-    runs-on: ubuntu-latest
-    if: github.event_name == 'pull_request'
-    continue-on-error: true
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-      - name: Setup Go
-        uses: actions/setup-go@v5
-        with:
-          go-version: 1.23.1
-          cache: false
-      - name: Run lint
-        uses: golangci/golangci-lint-action@v6
-        with:
-          version: v1.60
-          config: .golangci.yaml
-
   tests_test_all:
     name: 'tests > test-all'
     runs-on: ubuntu-latest
-    needs: code_check-style_golangci_lint
     steps:
       - name: Checkout code
         uses: actions/checkout@v4

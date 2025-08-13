@@ -52,7 +52,8 @@ func TestUpdateVehicleCommand(t *testing.T) {
 	t.Run("should call OnSuccess when the vehicle was updated", func(t *testing.T) {
 		// given
 		input := builders.NewUpdateVehicleInputBuilder().Build()
-		repository := repositories.NewInMemoryVehiclesRepository().WithError(errors.New("get vehicle error"))
+		vehicles := builders.NewVehicleBuilder().BuildPagination()
+		repository := repositories.NewInMemoryVehiclesRepository().WithVehicles(vehicles)
 		command := commands.NewUpdateVehicleCommand(repository)
 
 		// when & then

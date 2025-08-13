@@ -28,7 +28,7 @@ func TestDoors(t *testing.T) {
 		// given & when
 		doors, err := dtos.NewDoors(5)
 		// then
-		assert.NotNil(t, doors, "doors should be created")
+		assert.Equal(t, 5, doors.Value(), "the value is correct")
 		assert.Nil(t, err, "the door count should be greater than 5")
 	})
 }

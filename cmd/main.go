@@ -1,7 +1,7 @@
 package main
 
 import (
-	logger "github.com/sirupsen/logrus"
+  logger "github.com/sirupsen/logrus"
 )
 
 // @title Vehicle Management Service
@@ -16,18 +16,21 @@ import (
 // @license.name MIT License
 // @license.url https://opensource.org/license/mit
 func main() {
-	logger.Info("⚙️ Initializing application...")
-	defer handlePanic()
+  logger.Info("⚙️ Initializing application...")
+  defer handlePanic()
 
-	modules := injectModules()
-	settings := injectSettings()
+  modules := InjectModules()
+  settings := InjectSettings()
 
-	StartServer(modules, settings)
+  application := SetupServer(modules)
+
+  port := settings.GetPort()
+  application.Logger.Fatal(application.Start(port))
 }
 
 func handlePanic() {
-	if r := recover(); r != nil {
-		logger.WithField("panic", r).
-			Fatal("🚨 A critical and unrecoverable error occurred, forcing the application to stop.")
-	}
+  if r := recover(); r != nil {
+    logger.WithField("panic", r).
+      Fatal("🚨 A critical and unrecoverable error occurred, forcing the application to stop.")
+  }
 }

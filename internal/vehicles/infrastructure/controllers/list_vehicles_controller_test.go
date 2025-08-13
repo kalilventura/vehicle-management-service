@@ -16,7 +16,7 @@ import (
 
 func TestListVehiclesController(t *testing.T) {
 	const route = "/v1/vehicles"
-	t.Run("should return OK when there are vehicles to show", func(t *testing.T) {
+	t.Run("should respond OK when there are vehicles to show", func(t *testing.T) {
 		// given
 		page := builders.NewVehicleBuilder().BuildPagination()
 		command := commands.NewListVehiclesCommandStub().WithOnSuccess(page)
@@ -34,7 +34,7 @@ func TestListVehiclesController(t *testing.T) {
 		assert.Equal(t, http.StatusOK, recorder.Code)
 	})
 
-	t.Run("should return InternalServerError due an unexpected error", func(t *testing.T) {
+	t.Run("should respond InternalServerError due an unexpected error", func(t *testing.T) {
 		// given
 		command := commands.NewListVehiclesCommandStub().WithOnInternalServerError()
 		controller := controllers.NewListVehiclesController(command)
@@ -49,5 +49,17 @@ func TestListVehiclesController(t *testing.T) {
 
 		// then
 		assert.Equal(t, http.StatusInternalServerError, recorder.Code)
+	})
+
+	t.Run("should return the metadata", func(t *testing.T) {
+		// given
+		controller := controllers.NewListVehiclesController(nil)
+
+		// when
+		metadata := controller.GetBind()
+
+		// then
+		assert.Equal(t, "/vehicles", metadata.RelativePath)
+		assert.Equal(t, http.MethodGet, metadata.Method)
 	})
 }
