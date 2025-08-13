@@ -17,7 +17,7 @@ import (
 func TestUpdateVehicleCommand(t *testing.T) {
 	t.Run("should call OnNotFound when there's no vehicle found", func(t *testing.T) {
 		// given
-		input := builders.NewUpdateVehicleInputBuilder().BuildValid()
+		input := builders.NewUpdateVehicleInputBuilder().Build()
 		repository := repositories.NewInMemoryVehiclesRepository().WithError(domainerror.ErrRecordNotFound)
 		command := commands.NewUpdateVehicleCommand(repository)
 
@@ -28,7 +28,7 @@ func TestUpdateVehicleCommand(t *testing.T) {
 				wasCalled = true
 			},
 		}
-		command.Execute(input, listeners)
+		command.Execute(&input, listeners)
 
 		// then
 		assert.True(t, wasCalled, "OnNotFound was not called")
@@ -36,7 +36,7 @@ func TestUpdateVehicleCommand(t *testing.T) {
 
 	t.Run("should call OnInternalServerError when there's an error to find the vehicle", func(t *testing.T) {
 		// given
-		input := builders.NewUpdateVehicleInputBuilder().BuildValid()
+		input := builders.NewUpdateVehicleInputBuilder().Build()
 		repository := repositories.NewInMemoryVehiclesRepository().WithError(errors.New("get vehicle error"))
 		command := commands.NewUpdateVehicleCommand(repository)
 
@@ -46,12 +46,12 @@ func TestUpdateVehicleCommand(t *testing.T) {
 				assert.NotNil(t, err, "Error was not returned")
 			},
 		}
-		command.Execute(input, listeners)
+		command.Execute(&input, listeners)
 	})
 
 	t.Run("should call OnSuccess when the vehicle was updated", func(t *testing.T) {
 		// given
-		input := builders.NewUpdateVehicleInputBuilder().BuildValid()
+		input := builders.NewUpdateVehicleInputBuilder().Build()
 		repository := repositories.NewInMemoryVehiclesRepository().WithError(errors.New("get vehicle error"))
 		command := commands.NewUpdateVehicleCommand(repository)
 
@@ -61,6 +61,6 @@ func TestUpdateVehicleCommand(t *testing.T) {
 				assert.NotNil(t, vehicle, "Vehicle was not returned")
 			},
 		}
-		command.Execute(input, listeners)
+		command.Execute(&input, listeners)
 	})
 }
