@@ -17,7 +17,8 @@ Exceptions are acceptable depending on the circumstances (critical bug fixes tha
 
 ### Added
 
-- added unit tests for all controllers and commands
+- added unit tests for domain layer
+- added unit tests for infrastructure layer
 - added a new resource `PATCH /v1/vehicles/:id` to update the vehicle
 - added swagger to improve application documentation
 - added a new resource `GET /v1/vehicles` to list the vehicles

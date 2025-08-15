@@ -54,6 +54,5 @@ func (qp ListVehiclesQueryParams) ToDomain() (*dtos.ListVehiclesInput, error) {
 		Page: qp.Page,
 		Size: qp.Size,
 	}
-
 	return input, nil
 }

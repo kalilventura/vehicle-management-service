@@ -15,6 +15,14 @@ func NewVehicleBuilder() *VehicleBuilder {
 	return &VehicleBuilder{}
 }
 
+func (b *VehicleBuilder) WithYear(value int) *VehicleBuilder {
+	year, _ := dtos.NewYear(value)
+	b.AppendModifier(func(e *entities.Vehicle) {
+		e.Year = year
+	})
+	return b
+}
+
 func (b *VehicleBuilder) WithSpecification(value entities.Specification) *VehicleBuilder {
 	b.AppendModifier(func(e *entities.Vehicle) {
 		e.Specification = value

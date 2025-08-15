@@ -23,7 +23,7 @@ import (
 
 // Injectors from wire.go:
 
-func injectModules() []entities.HTTPModule {
+func InjectModules() []entities.HTTPModule {
 	databaseSettings := injectDatabaseSettings()
 	db := configuration.NewDatabaseClient(databaseSettings)
 	gormVehiclesRepository := repositories.NewGormVehiclesRepository(db)
@@ -42,7 +42,7 @@ func injectModules() []entities.HTTPModule {
 
 // wire.go:
 
-func injectSettings() *entities.Settings {
+func InjectSettings() *entities.Settings {
 	port, _ := strconv.Atoi(os.Getenv("PORT"))
 	return entities.NewSettings(port)
 }

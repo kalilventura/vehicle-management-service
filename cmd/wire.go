@@ -12,7 +12,7 @@ import (
 	"github.com/kalilventura/vehicle-management/internal/vehicles"
 )
 
-func injectModules() []entities.HTTPModule {
+func InjectModules() []entities.HTTPModule {
 	wire.Build(
 		injectDatabaseSettings,
 		configuration.NewDatabaseClient,
@@ -22,7 +22,7 @@ func injectModules() []entities.HTTPModule {
 	return nil
 }
 
-func injectSettings() *entities.Settings {
+func InjectSettings() *entities.Settings {
 	port, _ := strconv.Atoi(os.Getenv("PORT"))
 	return entities.NewSettings(port)
 }

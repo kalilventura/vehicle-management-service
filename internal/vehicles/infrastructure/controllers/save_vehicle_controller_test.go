@@ -3,6 +3,8 @@
 package controllers_test
 
 import (
+	"bytes"
+	"encoding/json"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -41,6 +43,27 @@ func TestSaveVehicleController(t *testing.T) {
 
 	t.Run("should return Bad Request when the vehicle is invalid", func(t *testing.T) {
 		// given
+		data := "{invalid"
+		requestBodyBytes, _ := json.Marshal(data)
+		reqBody := bytes.NewBuffer(requestBodyBytes)
+		command := commands.NewSaveVehicleCommandStub().WithOnNotValid()
+		controller := controllers.NewSaveVehicleController(command)
+
+		router := echo.New()
+		recorder := httptest.NewRecorder()
+		request := httptest.NewRequest(http.MethodPost, route, reqBody)
+		request.Header.Set("Content-Type", "application/json")
+		router.POST(route, controller.Execute)
+
+		// when
+		router.ServeHTTP(recorder, request)
+
+		// then
+		assert.Equal(t, http.StatusBadRequest, recorder.Code)
+	})
+
+	t.Run("should return Bad Request when the vehicle is invalid", func(t *testing.T) {
+		// given
 		createRequest := builders2.NewCreateVehicleRequestBuilder().BuildRequest()
 		command := commands.NewSaveVehicleCommandStub().WithOnNotValid()
 		controller := controllers.NewSaveVehicleController(command)
@@ -60,8 +83,7 @@ func TestSaveVehicleController(t *testing.T) {
 
 	t.Run("should return Bad Request when the body is invalid", func(t *testing.T) {
 		// given
-		vehicle := builders.NewVehicleBuilder().Build()
-		command := commands.NewSaveVehicleCommandStub().WithOnSuccess(vehicle)
+		command := commands.NewSaveVehicleCommandStub()
 		controller := controllers.NewSaveVehicleController(command)
 
 		router := echo.New()
@@ -96,5 +118,17 @@ func TestSaveVehicleController(t *testing.T) {
 
 		// then
 		assert.Equal(t, http.StatusInternalServerError, recorder.Code)
+	})
+
+	t.Run("should return the metadata", func(t *testing.T) {
+		// given
+		controller := controllers.NewSaveVehicleController(nil)
+
+		// when
+		metadata := controller.GetBind()
+
+		// then
+		assert.Equal(t, "/vehicles", metadata.RelativePath)
+		assert.Equal(t, http.MethodPost, metadata.Method)
 	})
 }
