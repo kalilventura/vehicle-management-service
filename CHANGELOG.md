@@ -18,7 +18,7 @@ Exceptions are acceptable depending on the circumstances (critical bug fixes tha
 ### Added
 
 - added unit tests for domain layer
-- added unit tests for infrastructure layer
+- added unit tests for the infrastructure layer
 - added a new resource `PATCH /v1/vehicles/:id` to update the vehicle
 - added swagger to improve application documentation
 - added a new resource `GET /v1/vehicles` to list the vehicles
@@ -26,6 +26,10 @@ Exceptions are acceptable depending on the circumstances (critical bug fixes tha
 - added a new resource `POST /v1/vehicles` to create a new vehicle
 - added dockerfile support
 - added project structure
+
+### Changed
+
+- changed the pipeline by improving the Docker image push
 
 ### Fixed
 
