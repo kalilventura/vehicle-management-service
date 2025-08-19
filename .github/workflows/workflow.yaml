@@ -71,7 +71,7 @@ jobs:
       - name: Validate Docker Hub repository
         id: validate-repo
         run: |
-          REPO_NAME="kalilventura"
+          REPO_NAME="${{ secrets.DOCKER_REPOSITORY_NAME }}"
           NAMESPACE="${{ secrets.DOCKER_USERNAME }}"
           RESPONSE=$(curl -s -o /dev/null -w "%{http_code}" "https://hub.docker.com/v2/repositories/${NAMESPACE}/${REPO_NAME}/")
 
@@ -94,5 +94,5 @@ jobs:
           context: .
           push: true
           tags: |
-            ${{ secrets.DOCKER_USERNAME }}/vehicle-management-service:latest
-            ${{ secrets.DOCKER_USERNAME }}/vehicle-management-service:${{ github.sha }}
+            ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPOSITORY_NAME }}:latest
+            ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPOSITORY_NAME }}:${{ github.sha }}

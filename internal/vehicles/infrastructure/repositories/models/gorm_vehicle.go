@@ -10,7 +10,7 @@ import (
 
 type GormVehicle struct {
 	ID           string  `gorm:"primaryKey;type:uuid;default:uuidv7()"`
-	Price        float64 `gorm:"not null;check:price >= 0"`
+	Price        float64 `gorm:"not null;check:price > 0"`
 	Brand        string  `gorm:"type:varchar(30);not null"`
 	Model        string  `gorm:"type:varchar(30);not null"`
 	BodyType     string  `gorm:"type:varchar(30);not null"`
