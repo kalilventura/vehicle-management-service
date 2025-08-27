@@ -9,16 +9,19 @@ import (
 	"github.com/google/wire"
 	"github.com/kalilventura/vehicle-management/internal/shared/domain/entities"
 	"github.com/kalilventura/vehicle-management/internal/shared/infrastructure/configuration"
+	"github.com/kalilventura/vehicle-management/internal/shared/infrastructure/services"
 	"github.com/kalilventura/vehicle-management/internal/vehicles"
 )
 
-func InjectModules() []entities.HTTPModule {
+func InjectApp() *App {
 	wire.Build(
 		InjectSettings,
 		injectDatabaseSettings,
 		configuration.NewDatabaseClient,
+		services.Container,
 		vehicles.Container,
 		newModules,
+		NewApp,
 	)
 	return nil
 }
