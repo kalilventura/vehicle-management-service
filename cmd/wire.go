@@ -14,6 +14,7 @@ import (
 
 func InjectModules() []entities.HTTPModule {
 	wire.Build(
+		InjectSettings,
 		injectDatabaseSettings,
 		configuration.NewDatabaseClient,
 		vehicles.Container,
@@ -24,7 +25,9 @@ func InjectModules() []entities.HTTPModule {
 
 func InjectSettings() *entities.Settings {
 	port, _ := strconv.Atoi(os.Getenv("PORT"))
-	return entities.NewSettings(port)
+	paymentsAPI := os.Getenv("PAYMENTS_API")
+
+	return entities.NewSettings(port, paymentsAPI)
 }
 
 func injectDatabaseSettings() *entities.DatabaseSettings {

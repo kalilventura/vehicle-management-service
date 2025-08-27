@@ -3,11 +3,12 @@ package entities
 import "fmt"
 
 type Settings struct {
-	Port int
+	Port        int
+	PaymentsAPI string
 }
 
-func NewSettings(port int) *Settings {
-	return &Settings{port}
+func NewSettings(port int, paymentsAPI string) *Settings {
+	return &Settings{port, paymentsAPI}
 }
 
 func (s Settings) GetPort() string {

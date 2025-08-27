@@ -114,6 +114,18 @@ definitions:
       totalPages:
         type: integer
     type: object
+  SellVehicleRequest:
+    description: Object that represents a sell
+    properties:
+      amount:
+        type: number
+      cpf:
+        description: VehicleID string  `json:"vehicle_id" binding:"required"`
+        type: string
+    required:
+    - amount
+    - cpf
+    type: object
   SuccessResponse:
     description: Object that represents a success response
     properties:
@@ -124,23 +136,8 @@ definitions:
       status:
         type: integer
     type: object
-  VehicleViewResponse:
-    description: basic Vehicle information
-    properties:
-      brand:
-        type: string
-      id:
-        type: string
-      mileage:
-        type: integer
-      model:
-        type: string
-      price:
-        type: number
-      year:
-        type: integer
-    type: object
-  github_com_kalilventura_vehicle-management_internal_vehicles_infrastructure_controllers_requests.UpdateVehicleRequest:
+  UpdateVehicleRequest:
+    description: Object that represents a vehicle to update
     properties:
       color:
         type: string
@@ -177,6 +174,82 @@ definitions:
       status:
         type: string
     type: object
+  VehicleResponse:
+    description: Represents a vehicle
+    properties:
+      body_type:
+        type: string
+      brand:
+        type: string
+      color:
+        type: string
+      condition:
+        type: string
+      created_at:
+        type: string
+      description:
+        type: string
+      doors:
+        type: integer
+      engine:
+        type: string
+      fuel_type:
+        type: string
+      has_abs_brakes:
+        type: boolean
+      has_air_conditioning:
+        type: boolean
+      has_airbag:
+        type: boolean
+      has_alarm:
+        type: boolean
+      has_multimedia:
+        type: boolean
+      has_parking_sensors:
+        type: boolean
+      has_power_locks:
+        type: boolean
+      has_power_steering:
+        type: boolean
+      has_power_windows:
+        type: boolean
+      has_rear_camera:
+        type: boolean
+      has_traction_control:
+        type: boolean
+      id:
+        type: string
+      mileage:
+        type: integer
+      model:
+        type: string
+      price:
+        type: number
+      status:
+        type: string
+      transmission:
+        type: string
+      updated_at:
+        type: string
+      year:
+        type: integer
+    type: object
+  VehicleViewResponse:
+    description: basic Vehicle information
+    properties:
+      brand:
+        type: string
+      id:
+        type: string
+      mileage:
+        type: integer
+      model:
+        type: string
+      price:
+        type: number
+      year:
+        type: integer
+    type: object
 info:
   contact:
     email: kalilventur@gmail.com
@@ -192,94 +265,121 @@ info:
 paths:
   /v1/vehicles:
     get:
-      consumes:
-      - application/json
-      description: list vehicles by criteria
+      description: Retrieves a paginated list of vehicles. This endpoint supports
+        filtering by brand, model, and status, as well as sorting and pagination.
+      operationId: list-vehicles
+      parameters:
+      - description: Filter by vehicle brand (e.g., 'Ford')
+        in: query
+        name: brand
+        type: string
+      - description: Filter by vehicle model (e.g., 'Mustang')
+        in: query
+        name: model
+        type: string
+      - description: Filter by vehicle status
+        enum:
+        - available
+        - sold
+        in: query
+        name: status
+        type: string
+      - default: createdAt
+        description: Field to sort by
+        enum:
+        - price
+        - year
+        - createdAt
+        in: query
+        name: sortBy
+        type: string
+      - default: desc
+        description: Sort order ('asc' or 'desc')
+        enum:
+        - asc
+        - desc
+        in: query
+        name: sortOrder
+        type: string
+      - default: 1
+        description: Page number for pagination
+        in: query
+        name: page
+        type: integer
+      - default: 10
+        description: Number of items per page
+        in: query
+        name: pageSize
+        type: integer
       produces:
       - application/json
       responses:
         "200":
-          description: OK
+          description: A paginated list of vehicles that match the criteria
           schema:
             $ref: '#/definitions/PaginatedResponse-VehicleViewResponse'
+        "400":
+          description: Bad Request (e.g., invalid filter or pagination parameters)
+          schema:
+            $ref: '#/definitions/ErrorResponse'
         "500":
           description: Internal Server Error
           schema:
             $ref: '#/definitions/ErrorResponse'
-      summary: List vehicles by criteria
+      summary: List and Filter Vehicles
       tags:
       - vehicles
     post:
       consumes:
       - application/json
-      description: Save a new vehicle
+      description: Adds a new vehicle to the database. The request body must contain
+        all required vehicle details. Upon successful creation, the full vehicle object,
+        including its server-generated unique ID, is returned.
+      operationId: create-vehicle
       parameters:
-      - description: Request body
+      - description: Payload containing the new vehicle's data
         in: body
-        name: request
+        name: vehicle
         required: true
         schema:
           $ref: '#/definitions/CreateVehicleRequest'
       produces:
       - application/json
       responses:
-        "200":
-          description: OK
+        "201":
+          description: Vehicle created successfully
           schema:
-            $ref: '#/definitions/SuccessResponse'
+            allOf:
+            - $ref: '#/definitions/SuccessResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/VehicleResponse'
+              type: object
         "400":
-          description: Bad Request
+          description: Bad Request (e.g., missing required fields or invalid data
+            format)
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "409":
+          description: Conflict (e.g., a vehicle with the same license plate already
+            exists)
           schema:
             $ref: '#/definitions/ErrorResponse'
         "500":
           description: Internal Server Error
           schema:
             $ref: '#/definitions/ErrorResponse'
-      summary: Save a new vehicle
-      tags:
-      - vehicles
-  /v1/vehicles/:id:
-    patch:
-      consumes:
-      - application/json
-      description: Update a vehicle
-      parameters:
-      - description: Vehicle ID
-        in: path
-        name: id
-        required: true
-        type: string
-      - description: Request body
-        in: body
-        name: request
-        required: true
-        schema:
-          $ref: '#/definitions/github_com_kalilventura_vehicle-management_internal_vehicles_infrastructure_controllers_requests.UpdateVehicleRequest'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/SuccessResponse'
-        "400":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/ErrorResponse'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/ErrorResponse'
-      summary: Update a vehicle
+      summary: Create a New Vehicle
       tags:
       - vehicles
   /v1/vehicles/{id}:
     get:
-      consumes:
-      - application/json
-      description: get vehicle by ID
+      description: Fetches the details of a single vehicle from the database using
+        its unique UUID.
+      operationId: get-vehicle-by-id
       parameters:
-      - description: Vehicle ID
+      - description: The unique identifier (UUID) of the vehicle
+        format: uuid
         in: path
         name: id
         required: true
@@ -288,18 +388,129 @@ paths:
       - application/json
       responses:
         "200":
-          description: OK
+          description: Successfully retrieved the vehicle data
           schema:
-            $ref: '#/definitions/SuccessResponse'
+            allOf:
+            - $ref: '#/definitions/SuccessResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/VehicleResponse'
+              type: object
         "404":
-          description: Not Found
+          description: The vehicle with the specified ID was not found
           schema:
             $ref: '#/definitions/ErrorResponse'
         "500":
           description: Internal Server Error
           schema:
             $ref: '#/definitions/ErrorResponse'
-      summary: Get a vehicle by ID
+      summary: Retrieve a Vehicle by ID
+      tags:
+      - vehicles
+    patch:
+      consumes:
+      - application/json
+      description: Partially updates the data for a specific vehicle. Only the fields
+        provided in the JSON request body will be modified. All other fields will
+        remain unchanged.
+      operationId: update-vehicle-by-id
+      parameters:
+      - description: The unique identifier (UUID) of the vehicle to update
+        format: uuid
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Payload with the vehicle fields to be updated
+        in: body
+        name: vehicle
+        required: true
+        schema:
+          $ref: '#/definitions/UpdateVehicleRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Vehicle updated successfully
+          schema:
+            allOf:
+            - $ref: '#/definitions/SuccessResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/VehicleResponse'
+              type: object
+        "400":
+          description: Bad Request (e.g., invalid data format or validation error)
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "404":
+          description: The vehicle with the specified ID was not found
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "409":
+          description: Conflict (e.g., updating a unique field to a value that already
+            exists)
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+      summary: Update Vehicle Details (Partial)
+      tags:
+      - vehicles
+  /v1/vehicles/{id}/sales:
+    post:
+      consumes:
+      - application/json
+      description: |-
+        Processes and records the sale of an existing vehicle by its unique ID.
+        Upon successful execution, this changes the vehicle's status to "sold".
+        This operation is not idempotent; attempting to sell the same vehicle more than once will result in a conflict error.
+      operationId: sell-vehicle-by-id
+      parameters:
+      - description: Vehicle ID (UUID)
+        format: uuid
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Payload with sale details, such as buyer information and final
+          price
+        in: body
+        name: sale
+        required: true
+        schema:
+          $ref: '#/definitions/SellVehicleRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Vehicle sale registered successfully
+          schema:
+            allOf:
+            - $ref: '#/definitions/SuccessResponse'
+            - properties:
+                data:
+                  type: object
+              type: object
+        "400":
+          description: Bad Request (e.g., missing sale data or invalid format)
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "404":
+          description: Vehicle with the specified ID was not found
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "409":
+          description: 'Conflict: The vehicle has already been sold'
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+      summary: Sell a Vehicle
       tags:
       - vehicles
 swagger: "2.0"

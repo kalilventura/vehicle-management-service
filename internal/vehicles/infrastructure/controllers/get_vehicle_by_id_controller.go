@@ -29,17 +29,19 @@ func (ctrl *GetVehicleByIdController) GetBind() shared.ControllerBind {
 }
 
 // Execute
-// @Summary Get a vehicle by ID
-// @Description get vehicle by ID
-// @BasePath /v1/vehicles/:id
-// @Tags vehicles
-// @Accept application/json
-// @Produce application/json
-// @Param id path string true "Vehicle ID"
-// @Success 200 {object} controllers.SuccessResponse
-// @Failure 404 {object} controllers.ErrorResponse
-// @Failure 500 {object} controllers.ErrorResponse
-// @Router /v1/vehicles/{id} [get]
+//
+// GetVehicleByID retrieves a single vehicle based on its unique identifier.
+//
+// @Summary      Retrieve a Vehicle by ID
+// @Description  Fetches the details of a single vehicle from the database using its unique UUID.
+// @ID           get-vehicle-by-id
+// @Tags         vehicles
+// @Produce      json
+// @Param        id   path      string  true  "The unique identifier (UUID) of the vehicle" format(uuid)
+// @Success      200  {object}  controllers.SuccessResponse{data=responses.VehicleResponse} "Successfully retrieved the vehicle data"
+// @Failure      404  {object}  controllers.ErrorResponse "The vehicle with the specified ID was not found"
+// @Failure      500  {object}  controllers.ErrorResponse "Internal Server Error"
+// @Router       /v1/vehicles/{id} [get]
 func (ctrl *GetVehicleByIdController) Execute(ectx echo.Context) error {
 	id := ectx.Param("id")
 

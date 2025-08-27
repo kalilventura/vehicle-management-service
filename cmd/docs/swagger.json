@@ -18,22 +18,87 @@
     "paths": {
         "/v1/vehicles": {
             "get": {
-                "description": "list vehicles by criteria",
-                "consumes": [
-                    "application/json"
-                ],
+                "description": "Retrieves a paginated list of vehicles. This endpoint supports filtering by brand, model, and status, as well as sorting and pagination.",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
                     "vehicles"
                 ],
-                "summary": "List vehicles by criteria",
+                "summary": "List and Filter Vehicles",
+                "operationId": "list-vehicles",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Filter by vehicle brand (e.g., 'Ford')",
+                        "name": "brand",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by vehicle model (e.g., 'Mustang')",
+                        "name": "model",
+                        "in": "query"
+                    },
+                    {
+                        "enum": [
+                            "available",
+                            "sold"
+                        ],
+                        "type": "string",
+                        "description": "Filter by vehicle status",
+                        "name": "status",
+                        "in": "query"
+                    },
+                    {
+                        "enum": [
+                            "price",
+                            "year",
+                            "createdAt"
+                        ],
+                        "type": "string",
+                        "default": "createdAt",
+                        "description": "Field to sort by",
+                        "name": "sortBy",
+                        "in": "query"
+                    },
+                    {
+                        "enum": [
+                            "asc",
+                            "desc"
+                        ],
+                        "type": "string",
+                        "default": "desc",
+                        "description": "Sort order ('asc' or 'desc')",
+                        "name": "sortOrder",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "default": 1,
+                        "description": "Page number for pagination",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "default": 10,
+                        "description": "Number of items per page",
+                        "name": "pageSize",
+                        "in": "query"
+                    }
+                ],
                 "responses": {
                     "200": {
-                        "description": "OK",
+                        "description": "A paginated list of vehicles that match the criteria",
                         "schema": {
                             "$ref": "#/definitions/PaginatedResponse-VehicleViewResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request (e.g., invalid filter or pagination parameters)",
+                        "schema": {
+                            "$ref": "#/definitions/ErrorResponse"
                         }
                     },
                     "500": {
@@ -45,7 +110,7 @@
                 }
             },
             "post": {
-                "description": "Save a new vehicle",
+                "description": "Adds a new vehicle to the database. The request body must contain all required vehicle details. Upon successful creation, the full vehicle object, including its server-generated unique ID, is returned.",
                 "consumes": [
                     "application/json"
                 ],
@@ -55,11 +120,12 @@
                 "tags": [
                     "vehicles"
                 ],
-                "summary": "Save a new vehicle",
+                "summary": "Create a New Vehicle",
+                "operationId": "create-vehicle",
                 "parameters": [
                     {
-                        "description": "Request body",
-                        "name": "request",
+                        "description": "Payload containing the new vehicle's data",
+                        "name": "vehicle",
                         "in": "body",
                         "required": true,
                         "schema": {
@@ -68,67 +134,32 @@
                     }
                 ],
                 "responses": {
-                    "200": {
-                        "description": "OK",
+                    "201": {
+                        "description": "Vehicle created successfully",
                         "schema": {
-                            "$ref": "#/definitions/SuccessResponse"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/SuccessResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/VehicleResponse"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     },
                     "400": {
-                        "description": "Bad Request",
+                        "description": "Bad Request (e.g., missing required fields or invalid data format)",
                         "schema": {
                             "$ref": "#/definitions/ErrorResponse"
                         }
                     },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/ErrorResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/v1/vehicles/:id": {
-            "patch": {
-                "description": "Update a vehicle",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "vehicles"
-                ],
-                "summary": "Update a vehicle",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Vehicle ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "description": "Request body",
-                        "name": "request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/github_com_kalilventura_vehicle-management_internal_vehicles_infrastructure_controllers_requests.UpdateVehicleRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/SuccessResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Not Found",
+                    "409": {
+                        "description": "Conflict (e.g., a vehicle with the same license plate already exists)",
                         "schema": {
                             "$ref": "#/definitions/ErrorResponse"
                         }
@@ -144,7 +175,60 @@
         },
         "/v1/vehicles/{id}": {
             "get": {
-                "description": "get vehicle by ID",
+                "description": "Fetches the details of a single vehicle from the database using its unique UUID.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "vehicles"
+                ],
+                "summary": "Retrieve a Vehicle by ID",
+                "operationId": "get-vehicle-by-id",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "format": "uuid",
+                        "description": "The unique identifier (UUID) of the vehicle",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully retrieved the vehicle data",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/SuccessResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/VehicleResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "404": {
+                        "description": "The vehicle with the specified ID was not found",
+                        "schema": {
+                            "$ref": "#/definitions/ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "patch": {
+                "description": "Partially updates the data for a specific vehicle. Only the fields provided in the JSON request body will be modified. All other fields will remain unchanged.",
                 "consumes": [
                     "application/json"
                 ],
@@ -154,25 +238,139 @@
                 "tags": [
                     "vehicles"
                 ],
-                "summary": "Get a vehicle by ID",
+                "summary": "Update Vehicle Details (Partial)",
+                "operationId": "update-vehicle-by-id",
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "Vehicle ID",
+                        "format": "uuid",
+                        "description": "The unique identifier (UUID) of the vehicle to update",
                         "name": "id",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "description": "Payload with the vehicle fields to be updated",
+                        "name": "vehicle",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/UpdateVehicleRequest"
+                        }
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "OK",
+                        "description": "Vehicle updated successfully",
                         "schema": {
-                            "$ref": "#/definitions/SuccessResponse"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/SuccessResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/VehicleResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request (e.g., invalid data format or validation error)",
+                        "schema": {
+                            "$ref": "#/definitions/ErrorResponse"
                         }
                     },
                     "404": {
-                        "description": "Not Found",
+                        "description": "The vehicle with the specified ID was not found",
+                        "schema": {
+                            "$ref": "#/definitions/ErrorResponse"
+                        }
+                    },
+                    "409": {
+                        "description": "Conflict (e.g., updating a unique field to a value that already exists)",
+                        "schema": {
+                            "$ref": "#/definitions/ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/v1/vehicles/{id}/sales": {
+            "post": {
+                "description": "Processes and records the sale of an existing vehicle by its unique ID.\nUpon successful execution, this changes the vehicle's status to \"sold\".\nThis operation is not idempotent; attempting to sell the same vehicle more than once will result in a conflict error.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "vehicles"
+                ],
+                "summary": "Sell a Vehicle",
+                "operationId": "sell-vehicle-by-id",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "format": "uuid",
+                        "description": "Vehicle ID (UUID)",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Payload with sale details, such as buyer information and final price",
+                        "name": "sale",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/SellVehicleRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Vehicle sale registered successfully",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/SuccessResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request (e.g., missing sale data or invalid format)",
+                        "schema": {
+                            "$ref": "#/definitions/ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Vehicle with the specified ID was not found",
+                        "schema": {
+                            "$ref": "#/definitions/ErrorResponse"
+                        }
+                    },
+                    "409": {
+                        "description": "Conflict: The vehicle has already been sold",
                         "schema": {
                             "$ref": "#/definitions/ErrorResponse"
                         }
@@ -348,6 +546,23 @@
                 }
             }
         },
+        "SellVehicleRequest": {
+            "description": "Object that represents a sell",
+            "type": "object",
+            "required": [
+                "amount",
+                "cpf"
+            ],
+            "properties": {
+                "amount": {
+                    "type": "number"
+                },
+                "cpf": {
+                    "description": "VehicleID string  `json:\"vehicle_id\" binding:\"required\"`",
+                    "type": "string"
+                }
+            }
+        },
         "SuccessResponse": {
             "description": "Object that represents a success response",
             "type": "object",
@@ -362,31 +577,8 @@
                 }
             }
         },
-        "VehicleViewResponse": {
-            "description": "basic Vehicle information",
-            "type": "object",
-            "properties": {
-                "brand": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "string"
-                },
-                "mileage": {
-                    "type": "integer"
-                },
-                "model": {
-                    "type": "string"
-                },
-                "price": {
-                    "type": "number"
-                },
-                "year": {
-                    "type": "integer"
-                }
-            }
-        },
-        "github_com_kalilventura_vehicle-management_internal_vehicles_infrastructure_controllers_requests.UpdateVehicleRequest": {
+        "UpdateVehicleRequest": {
+            "description": "Object that represents a vehicle to update",
             "type": "object",
             "properties": {
                 "color": {
@@ -439,6 +631,120 @@
                 },
                 "status": {
                     "type": "string"
+                }
+            }
+        },
+        "VehicleResponse": {
+            "description": "Represents a vehicle",
+            "type": "object",
+            "properties": {
+                "body_type": {
+                    "type": "string"
+                },
+                "brand": {
+                    "type": "string"
+                },
+                "color": {
+                    "type": "string"
+                },
+                "condition": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "doors": {
+                    "type": "integer"
+                },
+                "engine": {
+                    "type": "string"
+                },
+                "fuel_type": {
+                    "type": "string"
+                },
+                "has_abs_brakes": {
+                    "type": "boolean"
+                },
+                "has_air_conditioning": {
+                    "type": "boolean"
+                },
+                "has_airbag": {
+                    "type": "boolean"
+                },
+                "has_alarm": {
+                    "type": "boolean"
+                },
+                "has_multimedia": {
+                    "type": "boolean"
+                },
+                "has_parking_sensors": {
+                    "type": "boolean"
+                },
+                "has_power_locks": {
+                    "type": "boolean"
+                },
+                "has_power_steering": {
+                    "type": "boolean"
+                },
+                "has_power_windows": {
+                    "type": "boolean"
+                },
+                "has_rear_camera": {
+                    "type": "boolean"
+                },
+                "has_traction_control": {
+                    "type": "boolean"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "mileage": {
+                    "type": "integer"
+                },
+                "model": {
+                    "type": "string"
+                },
+                "price": {
+                    "type": "number"
+                },
+                "status": {
+                    "type": "string"
+                },
+                "transmission": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
+                },
+                "year": {
+                    "type": "integer"
+                }
+            }
+        },
+        "VehicleViewResponse": {
+            "description": "basic Vehicle information",
+            "type": "object",
+            "properties": {
+                "brand": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "mileage": {
+                    "type": "integer"
+                },
+                "model": {
+                    "type": "string"
+                },
+                "price": {
+                    "type": "number"
+                },
+                "year": {
+                    "type": "integer"
                 }
             }
         }

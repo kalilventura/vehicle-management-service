@@ -12,4 +12,6 @@ var Container = wire.NewSet(
 	wire.Bind(new(ListVehicles), new(*ListVehiclesCommand)),
 	NewUpdateVehicleCommand,
 	wire.Bind(new(UpdateVehicle), new(*UpdateVehicleCommand)),
+	NewSellVehicleCommand,
+	wire.Bind(new(SellVehicle), new(*SellVehicleCommand)),
 )

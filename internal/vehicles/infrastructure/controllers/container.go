@@ -10,4 +10,5 @@ var Container = wire.NewSet(
 	NewGetVehicleByIdController,
 	NewListVehiclesController,
 	NewUpdateVehicleController,
+	NewSellVehicleController,
 )
