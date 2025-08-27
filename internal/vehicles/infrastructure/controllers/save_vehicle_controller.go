@@ -5,6 +5,7 @@ import (
 
 	shared "github.com/kalilventura/vehicle-management/internal/shared/domain/entities"
 	"github.com/kalilventura/vehicle-management/internal/shared/infrastructure/controllers"
+	"github.com/kalilventura/vehicle-management/internal/shared/infrastructure/controllers/helpers"
 	"github.com/kalilventura/vehicle-management/internal/vehicles/domain/commands"
 	"github.com/kalilventura/vehicle-management/internal/vehicles/domain/entities"
 	"github.com/kalilventura/vehicle-management/internal/vehicles/infrastructure/controllers/requests"
@@ -29,19 +30,22 @@ func (ctrl *SaveVehicleController) GetBind() shared.ControllerBind {
 	}
 }
 
-// Execute Save a new vehicle
+// Execute handles the creation of a new vehicle record.
 //
-// @Summary Save a new vehicle
-// @Description Save a new vehicle
-// @BasePath /v1/vehicles
-// @Tags vehicles
-// @Accept application/json
-// @Produce application/json
-// @Param request body requests.CreateVehicleRequest true "Request body"
-// @Success 200 {object} controllers.SuccessResponse
-// @Failure 400 {object} controllers.ErrorResponse
-// @Failure 500 {object} controllers.ErrorResponse
-// @Router /v1/vehicles [post]
+// CreateVehicle handles the creation of a new vehicle record.
+//
+// @Summary      Create a New Vehicle
+// @Description  Adds a new vehicle to the database. The request body must contain all required vehicle details. Upon successful creation, the full vehicle object, including its server-generated unique ID, is returned.
+// @ID           create-vehicle
+// @Tags         vehicles
+// @Accept       json
+// @Produce      json
+// @Param        vehicle body      requests.CreateVehicleRequest  true  "Payload containing the new vehicle's data"
+// @Success      201     {object}  controllers.SuccessResponse{data=responses.VehicleResponse} "Vehicle created successfully"
+// @Failure      400     {object}  controllers.ErrorResponse "Bad Request (e.g., missing required fields or invalid data format)"
+// @Failure      409     {object}  controllers.ErrorResponse "Conflict (e.g., a vehicle with the same license plate already exists)"
+// @Failure      500     {object}  controllers.ErrorResponse "Internal Server Error"
+// @Router       /v1/vehicles [post]
 func (ctrl *SaveVehicleController) Execute(ectx echo.Context) error {
 	vehicleRequest := new(requests.CreateVehicleRequest)
 	if err := ectx.Bind(vehicleRequest); err != nil {
@@ -79,7 +83,7 @@ func (ctrl *SaveVehicleController) onSuccess(ectx echo.Context, vehicle *entitie
 }
 
 func (ctrl *SaveVehicleController) onInvalid(ectx echo.Context, err error) error {
-	validationErrors := ctrl.extractValidationErrors(err)
+	validationErrors := helpers.ExtractValidationErrors(err)
 	response := controllers.NewErrorResponse(
 		http.StatusBadRequest,
 		validationErrors,
@@ -94,10 +98,4 @@ func (ctrl *SaveVehicleController) onError(ectx echo.Context, err error) error {
 		nil,
 	)
 	return ectx.JSON(http.StatusInternalServerError, response)
-}
-
-func (ctrl *SaveVehicleController) extractValidationErrors(err error) map[string]string {
-	return map[string]string{
-		"generic": err.Error(),
-	}
 }

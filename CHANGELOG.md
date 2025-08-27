@@ -17,6 +17,7 @@ Exceptions are acceptable depending on the circumstances (critical bug fixes tha
 
 ### Added
 
+- added an integration between the application and the payments service
 - added unit tests for domain layer
 - added unit tests for the infrastructure layer
 - added a new resource `PATCH /v1/vehicles/:id` to update the vehicle

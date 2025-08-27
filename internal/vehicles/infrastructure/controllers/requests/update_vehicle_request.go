@@ -5,6 +5,8 @@ import (
 	"github.com/kalilventura/vehicle-management/internal/vehicles/domain/entities/dtos"
 )
 
+// UpdateVehicleRequest
+// @Description Object that represents a vehicle to update
 type UpdateVehicleRequest struct {
 	Price              *float64 `json:"price,omitempty"`
 	Mileage            *int     `json:"mileage,omitempty"`
@@ -23,7 +25,7 @@ type UpdateVehicleRequest struct {
 	HasTractionControl *bool    `json:"has_traction_control,omitempty"`
 	HasRearCamera      *bool    `json:"has_rear_camera,omitempty"`
 	HasParkingSensors  *bool    `json:"has_parking_sensors,omitempty"`
-}
+} // @name UpdateVehicleRequest
 
 func (r UpdateVehicleRequest) ToDomain(id string) (*entities.UpdateVehicleInput, error) {
 	input := &entities.UpdateVehicleInput{

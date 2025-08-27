@@ -7,6 +7,8 @@ import (
 	"github.com/kalilventura/vehicle-management/internal/vehicles/domain/entities/dtos"
 )
 
+// ListVehiclesQueryParams
+// @Description Object that represents the query params
 type ListVehiclesQueryParams struct {
 	Status    *string  `query:"status"`
 	MinPrice  *float64 `query:"min_price"`
@@ -15,7 +17,7 @@ type ListVehiclesQueryParams struct {
 	SortOrder *string  `query:"sort_order"`
 	Page      int      `query:"page"`
 	Size      int      `query:"size"`
-}
+} // @name ListVehiclesQueryParams
 
 func (qp ListVehiclesQueryParams) ToDomain() (*dtos.ListVehiclesInput, error) {
 	input := &dtos.ListVehiclesInput{}

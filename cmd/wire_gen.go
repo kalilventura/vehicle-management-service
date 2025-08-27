@@ -13,6 +13,7 @@ import (
 	"github.com/kalilventura/vehicle-management/internal/vehicles/domain/commands"
 	"github.com/kalilventura/vehicle-management/internal/vehicles/infrastructure/controllers"
 	"github.com/kalilventura/vehicle-management/internal/vehicles/infrastructure/repositories"
+	"github.com/kalilventura/vehicle-management/internal/vehicles/infrastructure/services"
 	"os"
 	"strconv"
 )
@@ -35,7 +36,11 @@ func InjectModules() []entities.HTTPModule {
 	listVehiclesController := controllers.NewListVehiclesController(listVehiclesCommand)
 	updateVehicleCommand := commands.NewUpdateVehicleCommand(gormVehiclesRepository)
 	updateVehicleController := controllers.NewUpdateVehicleController(updateVehicleCommand)
-	module := vehicles.NewModule(saveVehicleController, getVehicleByIdController, listVehiclesController, updateVehicleController)
+	settings := InjectSettings()
+	paymentsService := services.NewPaymentsService(settings)
+	sellVehicleCommand := commands.NewSellVehicleCommand(paymentsService, gormVehiclesRepository)
+	sellVehicleController := controllers.NewSellVehicleController(sellVehicleCommand)
+	module := vehicles.NewModule(saveVehicleController, getVehicleByIdController, listVehiclesController, updateVehicleController, sellVehicleController)
 	v := newModules(module)
 	return v
 }
@@ -44,7 +49,9 @@ func InjectModules() []entities.HTTPModule {
 
 func InjectSettings() *entities.Settings {
 	port, _ := strconv.Atoi(os.Getenv("PORT"))
-	return entities.NewSettings(port)
+	paymentsAPI := os.Getenv("PAYMENTS_API")
+
+	return entities.NewSettings(port, paymentsAPI)
 }
 
 func injectDatabaseSettings() *entities.DatabaseSettings {
