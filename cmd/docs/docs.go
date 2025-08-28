@@ -566,7 +566,6 @@ const docTemplate = `{
                     "type": "number"
                 },
                 "cpf": {
-                    "description": "VehicleID string  ` + "`" + `json:\"vehicle_id\" binding:\"required\"` + "`" + `",
                     "type": "string"
                 }
             }
@@ -598,37 +597,37 @@ const docTemplate = `{
                 "description": {
                     "type": "string"
                 },
-                "has_abs_brakes": {
+                "hasAbsBrakes": {
                     "type": "boolean"
                 },
-                "has_air_conditioning": {
+                "hasAirConditioning": {
                     "type": "boolean"
                 },
-                "has_airbag": {
+                "hasAirbag": {
                     "type": "boolean"
                 },
-                "has_alarm": {
+                "hasAlarm": {
                     "type": "boolean"
                 },
-                "has_multimedia": {
+                "hasMultimedia": {
                     "type": "boolean"
                 },
-                "has_parking_sensors": {
+                "hasParkingSensors": {
                     "type": "boolean"
                 },
-                "has_power_locks": {
+                "hasPowerLocks": {
                     "type": "boolean"
                 },
-                "has_power_steering": {
+                "hasPowerSteering": {
                     "type": "boolean"
                 },
-                "has_power_windows": {
+                "hasPowerWindows": {
                     "type": "boolean"
                 },
-                "has_rear_camera": {
+                "hasRearCamera": {
                     "type": "boolean"
                 },
-                "has_traction_control": {
+                "hasTractionControl": {
                     "type": "boolean"
                 },
                 "mileage": {
@@ -646,7 +645,7 @@ const docTemplate = `{
             "description": "Represents a vehicle",
             "type": "object",
             "properties": {
-                "body_type": {
+                "bodyType": {
                     "type": "string"
                 },
                 "brand": {
@@ -658,7 +657,7 @@ const docTemplate = `{
                 "condition": {
                     "type": "string"
                 },
-                "created_at": {
+                "createdAt": {
                     "type": "string"
                 },
                 "description": {
@@ -670,40 +669,40 @@ const docTemplate = `{
                 "engine": {
                     "type": "string"
                 },
-                "fuel_type": {
+                "fuelType": {
                     "type": "string"
                 },
-                "has_abs_brakes": {
+                "hasAbsBrakes": {
                     "type": "boolean"
                 },
-                "has_air_conditioning": {
+                "hasAirConditioning": {
                     "type": "boolean"
                 },
-                "has_airbag": {
+                "hasAirbag": {
                     "type": "boolean"
                 },
-                "has_alarm": {
+                "hasAlarm": {
                     "type": "boolean"
                 },
-                "has_multimedia": {
+                "hasMultimedia": {
                     "type": "boolean"
                 },
-                "has_parking_sensors": {
+                "hasParkingSensors": {
                     "type": "boolean"
                 },
-                "has_power_locks": {
+                "hasPowerLocks": {
                     "type": "boolean"
                 },
-                "has_power_steering": {
+                "hasPowerSteering": {
                     "type": "boolean"
                 },
-                "has_power_windows": {
+                "hasPowerWindows": {
                     "type": "boolean"
                 },
-                "has_rear_camera": {
+                "hasRearCamera": {
                     "type": "boolean"
                 },
-                "has_traction_control": {
+                "hasTractionControl": {
                     "type": "boolean"
                 },
                 "id": {
@@ -724,7 +723,7 @@ const docTemplate = `{
                 "transmission": {
                     "type": "string"
                 },
-                "updated_at": {
+                "updatedAt": {
                     "type": "string"
                 },
                 "year": {

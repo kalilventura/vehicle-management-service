@@ -5,7 +5,6 @@ import "github.com/kalilventura/vehicle-management/internal/vehicles/domain/enti
 // SellVehicleRequest
 // @Description Object that represents a sell
 type SellVehicleRequest struct {
-	//VehicleID string  `json:"vehicle_id" binding:"required"`
 	CPF    string  `json:"cpf" binding:"required"`
 	Amount float64 `json:"amount" binding:"required"`
 } // @name SellVehicleRequest
