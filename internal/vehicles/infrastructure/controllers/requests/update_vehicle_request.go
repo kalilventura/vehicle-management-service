@@ -14,17 +14,17 @@ type UpdateVehicleRequest struct {
 	Color              *string  `json:"color,omitempty"`
 	Description        *string  `json:"description,omitempty"`
 	Condition          *string  `json:"condition,omitempty"`
-	HasAirConditioning *bool    `json:"has_air_conditioning,omitempty"`
-	HasAirbag          *bool    `json:"has_airbag,omitempty"`
-	HasAbsBrakes       *bool    `json:"has_abs_brakes,omitempty"`
-	HasPowerSteering   *bool    `json:"has_power_steering,omitempty"`
-	HasPowerWindows    *bool    `json:"has_power_windows,omitempty"`
-	HasPowerLocks      *bool    `json:"has_power_locks,omitempty"`
-	HasMultimedia      *bool    `json:"has_multimedia,omitempty"`
-	HasAlarm           *bool    `json:"has_alarm,omitempty"`
-	HasTractionControl *bool    `json:"has_traction_control,omitempty"`
-	HasRearCamera      *bool    `json:"has_rear_camera,omitempty"`
-	HasParkingSensors  *bool    `json:"has_parking_sensors,omitempty"`
+	HasAirConditioning *bool    `json:"hasAirConditioning,omitempty"`
+	HasAirbag          *bool    `json:"hasAirbag,omitempty"`
+	HasAbsBrakes       *bool    `json:"hasAbsBrakes,omitempty"`
+	HasPowerSteering   *bool    `json:"hasPowerSteering,omitempty"`
+	HasPowerWindows    *bool    `json:"hasPowerWindows,omitempty"`
+	HasPowerLocks      *bool    `json:"hasPowerLocks,omitempty"`
+	HasMultimedia      *bool    `json:"hasMultimedia,omitempty"`
+	HasAlarm           *bool    `json:"hasAlarm,omitempty"`
+	HasTractionControl *bool    `json:"hasTractionControl,omitempty"`
+	HasRearCamera      *bool    `json:"hasRearCamera,omitempty"`
+	HasParkingSensors  *bool    `json:"hasParkingSensors,omitempty"`
 } // @name UpdateVehicleRequest
 
 func (r UpdateVehicleRequest) ToDomain(id string) (*entities.UpdateVehicleInput, error) {

@@ -5,12 +5,12 @@ import "github.com/kalilventura/vehicle-management/internal/vehicles/domain/enti
 // VehicleViewResponse
 // @Description basic Vehicle information
 type VehicleViewResponse struct {
-	ID      string  `json:"id"`
-	Brand   string  `json:"brand"`
-	Price   float64 `json:"price"`
-	Model   string  `json:"model"`
-	Mileage int     `json:"mileage"`
-	Year    int     `json:"year"`
+	ID      string  `json:"id,omitempty"`
+	Brand   string  `json:"brand,omitempty"`
+	Price   float64 `json:"price,omitempty"`
+	Model   string  `json:"model,omitempty"`
+	Mileage int     `json:"mileage,omitempty"`
+	Year    int     `json:"year,omitempty"`
 } // @name VehicleViewResponse
 
 func NewVehicleViewResponse(vehicle entities.Vehicle) VehicleViewResponse {
