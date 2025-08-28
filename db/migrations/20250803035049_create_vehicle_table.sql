@@ -1,7 +1,7 @@
 -- +goose Up
 -- +goose StatementBegin
 CREATE TABLE IF NOT EXISTS vehicle (
-  id UUID DEFAULT uuidv7() PRIMARY KEY,
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
 
   price DECIMAL NOT NULL CHECK (price >= 0),
   brand VARCHAR(30) NOT NULL,
