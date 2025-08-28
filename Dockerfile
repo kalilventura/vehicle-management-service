@@ -7,6 +7,7 @@ RUN go mod download
 
 COPY cmd ./cmd
 COPY internal ./internal
+COPY db/migrations ./db/migrations
 
 RUN go install github.com/google/wire/cmd/wire@latest
 RUN go generate ./...
@@ -20,6 +21,7 @@ RUN addgroup -S appgroup && adduser -S appuser -G appgroup
 WORKDIR /home/appuser
 
 COPY --from=builder /app/main .
+COPY --from=builder /app/db/migrations ./db/migrations
 
 RUN chown -R appuser:appgroup /home/appuser
 
