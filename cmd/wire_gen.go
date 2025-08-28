@@ -9,11 +9,12 @@ package main
 import (
 	"github.com/kalilventura/vehicle-management/internal/shared/domain/entities"
 	"github.com/kalilventura/vehicle-management/internal/shared/infrastructure/configuration"
+	"github.com/kalilventura/vehicle-management/internal/shared/infrastructure/services"
 	"github.com/kalilventura/vehicle-management/internal/vehicles"
 	"github.com/kalilventura/vehicle-management/internal/vehicles/domain/commands"
 	"github.com/kalilventura/vehicle-management/internal/vehicles/infrastructure/controllers"
 	"github.com/kalilventura/vehicle-management/internal/vehicles/infrastructure/repositories"
-	"github.com/kalilventura/vehicle-management/internal/vehicles/infrastructure/services"
+	services2 "github.com/kalilventura/vehicle-management/internal/vehicles/infrastructure/services"
 	"os"
 	"strconv"
 )
@@ -24,9 +25,11 @@ import (
 
 // Injectors from wire.go:
 
-func InjectModules() []entities.HTTPModule {
+func InjectApp() *App {
 	databaseSettings := injectDatabaseSettings()
 	db := configuration.NewDatabaseClient(databaseSettings)
+	gooseMigrationService := services.NewGooseMigrationService(db, databaseSettings)
+	settings := InjectSettings()
 	gormVehiclesRepository := repositories.NewGormVehiclesRepository(db)
 	saveVehicleCommand := commands.NewSaveVehicleCommand(gormVehiclesRepository)
 	saveVehicleController := controllers.NewSaveVehicleController(saveVehicleCommand)
@@ -36,13 +39,13 @@ func InjectModules() []entities.HTTPModule {
 	listVehiclesController := controllers.NewListVehiclesController(listVehiclesCommand)
 	updateVehicleCommand := commands.NewUpdateVehicleCommand(gormVehiclesRepository)
 	updateVehicleController := controllers.NewUpdateVehicleController(updateVehicleCommand)
-	settings := InjectSettings()
-	paymentsService := services.NewPaymentsService(settings)
+	paymentsService := services2.NewPaymentsService(settings)
 	sellVehicleCommand := commands.NewSellVehicleCommand(paymentsService, gormVehiclesRepository)
 	sellVehicleController := controllers.NewSellVehicleController(sellVehicleCommand)
 	module := vehicles.NewModule(saveVehicleController, getVehicleByIdController, listVehiclesController, updateVehicleController, sellVehicleController)
 	v := newModules(module)
-	return v
+	app := NewApp(gooseMigrationService, settings, v)
+	return app
 }
 
 // wire.go:

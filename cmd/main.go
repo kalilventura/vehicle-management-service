@@ -19,10 +19,11 @@ func main() {
   logger.Info("⚙️ Initializing application...")
   defer handlePanic()
 
-  modules := InjectModules()
+  app := InjectApp()
   settings := InjectSettings()
 
-  application := SetupServer(modules)
+  app.RunMigrations()
+  application := app.SetupServer()
 
   port := settings.GetPort()
   application.Logger.Fatal(application.Start(port))

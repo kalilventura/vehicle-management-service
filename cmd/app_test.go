@@ -51,8 +51,8 @@ func (suite *AppTestSuite) TestAppSuccess() {
 		suite.Require().NoError(err)
 
 		// when
-		modules := main.InjectModules()
-		application := main.SetupServer(modules)
+		app := main.InjectApp()
+		application := app.SetupServer()
 
 		// then
 		suite.NotNil(application)
