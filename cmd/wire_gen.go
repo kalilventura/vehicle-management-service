@@ -51,7 +51,7 @@ func InjectApp() *App {
 // wire.go:
 
 func InjectSettings() *entities.Settings {
-	port, _ := strconv.Atoi(os.Getenv("PORT"))
+	port, _ := strconv.Atoi(os.Getenv("APP_PORT"))
 	paymentsAPI := os.Getenv("PAYMENTS_API")
 
 	return entities.NewSettings(port, paymentsAPI)
