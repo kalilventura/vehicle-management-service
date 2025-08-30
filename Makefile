@@ -1,6 +1,6 @@
-.PHONY: docker-up
-docker-up:
-	docker compose -f .dev/compose.yaml up -d
+.PHONY: dev-up
+dev-up:
+	docker compose -f .dev/compose.yaml up  --build -d
 
 .PHONY: goose-up
 goose-up:
