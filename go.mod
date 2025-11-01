@@ -3,7 +3,7 @@ module github.com/kalilventura/vehicle-management
 go 1.24.5
 
 require (
-	github.com/brianvoe/gofakeit/v7 v7.4.0
+	github.com/brianvoe/gofakeit/v7 v7.8.2
 	github.com/go-resty/resty/v2 v2.16.5
 	github.com/google/wire v0.7.0
 	github.com/labstack/echo/v4 v4.13.4
