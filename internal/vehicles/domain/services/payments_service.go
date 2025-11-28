@@ -1,13 +1,6 @@
 package services
 
-import "github.com/kalilventura/vehicle-management/internal/vehicles/domain/entities"
-
+// PaymentsService is a domain service interface for processing payments
 type PaymentsService interface {
-	Pay(sellRequest *entities.SellVehicle, listeners PaymentsServiceListeners)
-}
-
-type PaymentsServiceListeners struct {
-	OnSuccess             func(sellRequest *entities.SellVehicle)
-	OnBadRequest          func(err error)
-	OnInternalServerError func(err error)
+	ProcessPayment(cpf string, amount float64) error
 }
