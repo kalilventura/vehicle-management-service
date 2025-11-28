@@ -84,8 +84,7 @@ func NewVehicle(props VehicleProps) (*Vehicle, error) {
 func NewVehicleWithID(
 	id string,
 	createdAt, updatedAt time.Time,
-	props VehicleProps,
-) (*Vehicle, error) {
+	props VehicleProps) (*Vehicle, error) {
 	if props.Brand == "" {
 		return nil, errors.New("brand is required")
 	}
@@ -180,7 +179,7 @@ func (v *Vehicle) Year() valueobjects.Year {
 // Sell marks the vehicle as sold
 func (v *Vehicle) Sell() error {
 	if !v.status.CanBeSold() {
-		return errors.New("vehicle cannot be sold in current status")
+		return errors.New("vehicle cannot be sold in current status: " + v.status.Value())
 	}
 
 	v.status = valueobjects.Sold()
