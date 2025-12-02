@@ -6,8 +6,8 @@ import (
 
 	global "github.com/kalilventura/vehicle-management/internal/shared/domain/entities"
 	domainerr "github.com/kalilventura/vehicle-management/internal/shared/domain/errors"
+	listvehicles "github.com/kalilventura/vehicle-management/internal/vehicles/application/use-cases/list-vehicles"
 	"github.com/kalilventura/vehicle-management/internal/vehicles/domain/entities"
-	"github.com/kalilventura/vehicle-management/internal/vehicles/domain/entities/dtos"
 	"github.com/kalilventura/vehicle-management/internal/vehicles/infrastructure/persistence/mappers"
 	"github.com/kalilventura/vehicle-management/internal/vehicles/infrastructure/persistence/models"
 	"gorm.io/gorm"
@@ -36,42 +36,6 @@ func (r *GormVehiclesRepository) Save(vehicle *entities.Vehicle) error {
 	return nil
 }
 
-// Update updates a vehicle (legacy method - should be refactored to use Save)
-func (r *GormVehiclesRepository) Update(vehicle *entities.UpdateVehicleInput) error {
-	// This method needs to be refactored to work with the new Vehicle entity
-	// For now, keeping it for backward compatibility
-	gormEntity := &models.GormVehicle{}
-	err := r.client.
-		Model(models.GormVehicle{}).
-		Where("id = ?", vehicle.ID).
-		First(gormEntity).Error
-	if err != nil {
-		return fmt.Errorf("failed to find vehicle: %w", err)
-	}
-
-	// Update fields if provided
-	if vehicle.Color != nil {
-		gormEntity.Color = *vehicle.Color
-	}
-	if vehicle.Description != nil {
-		gormEntity.Description = *vehicle.Description
-	}
-	if vehicle.Price != nil {
-		gormEntity.Price = vehicle.Price.Value()
-	}
-	if vehicle.Status != nil {
-		gormEntity.Status = vehicle.Status.Value()
-	}
-	if vehicle.Condition != nil {
-		gormEntity.Condition = vehicle.Condition.Value()
-	}
-
-	if err := r.client.Save(gormEntity).Error; err != nil {
-		return fmt.Errorf("failed to update vehicle: %w", err)
-	}
-	return nil
-}
-
 // GetByID gets a vehicle by ID
 func (r *GormVehiclesRepository) GetByID(ID string) (*entities.Vehicle, error) {
 	vehicle := &models.GormVehicle{}
@@ -87,7 +51,7 @@ func (r *GormVehiclesRepository) GetByID(ID string) (*entities.Vehicle, error) {
 
 // FindWithFilters finds vehicles with filters
 func (r *GormVehiclesRepository) FindWithFilters(
-	filter dtos.ListVehiclesInput) (*global.PaginatedEntity[entities.Vehicle], error) {
+	filter listvehicles.Input) (*global.PaginatedEntity[entities.Vehicle], error) {
 	var list []models.GormVehicle
 	query := r.client.Model(&models.GormVehicle{})
 
@@ -95,10 +59,10 @@ func (r *GormVehiclesRepository) FindWithFilters(
 		query = query.Where("status = ?", filter.Status.Value())
 	}
 	if filter.MinPrice != nil {
-		query = query.Where("price >= ?", filter.MinPrice.Value())
+		query = query.Where("price >= ?", filter.MinPrice.Amount())
 	}
 	if filter.MaxPrice != nil {
-		query = query.Where("price <= ?", filter.MaxPrice.Value())
+		query = query.Where("price <= ?", filter.MaxPrice.Amount())
 	}
 
 	var total int64

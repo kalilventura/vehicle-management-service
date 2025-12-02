@@ -7,9 +7,10 @@ import (
 	"testing"
 
 	"github.com/kalilventura/vehicle-management/internal/shared/infrastructure/configuration"
+	listvehicles "github.com/kalilventura/vehicle-management/internal/vehicles/application/use-cases/list-vehicles"
 	entities2 "github.com/kalilventura/vehicle-management/internal/vehicles/domain/entities"
-	"github.com/kalilventura/vehicle-management/internal/vehicles/domain/entities/dtos"
-	"github.com/kalilventura/vehicle-management/internal/vehicles/infrastructure/repositories"
+	valueobjects "github.com/kalilventura/vehicle-management/internal/vehicles/domain/value-objects"
+	persistence "github.com/kalilventura/vehicle-management/internal/vehicles/infrastructure/persistence"
 	"github.com/kalilventura/vehicle-management/test/shared/infrastructure"
 	"github.com/kalilventura/vehicle-management/test/vehicles/domain/builders"
 	"github.com/stretchr/testify/suite"
@@ -49,15 +50,25 @@ func (suite *GormVehiclesRepositoryTestSuite) TearDownSuite() {
 func (suite *GormVehiclesRepositoryTestSuite) TestSuccessfully() {
 	suite.Run("should create a new vehicle successfully", func() {
 		// given
-		mileage, _ := dtos.NewMileage(0)
-		doors, _ := dtos.NewDoors(4)
-		specification := entities2.Specification{
-			Mileage: mileage,
-			Doors:   doors,
-		}
+		mileage, _ := valueobjects.NewMileage(0)
+		doors, _ := valueobjects.NewDoors(4)
+		bodyType, _ := valueobjects.NewBodyType("sedan")
+		transmission, _ := valueobjects.NewTransmission("automatic")
+		fuelType, _ := valueobjects.NewFuelType("gasoline")
+
+		specification := valueobjects.NewSpecification(valueobjects.SpecificationProps{
+			Mileage:      mileage,
+			Doors:        doors,
+			BodyType:     bodyType,
+			Transmission: transmission,
+			FuelType:     fuelType,
+			Engine:       "2.0L",
+		})
+
+		year, _ := valueobjects.NewYear(2006)
 		vehicle := builders.NewVehicleBuilder().
 			WithSpecification(specification).
-			WithYear(2006).
+			WithYear(year).
 			Build()
 		transaction := suite.db.Begin()
 		defer transaction.Rollback()
@@ -97,7 +108,7 @@ func (suite *GormVehiclesRepositoryTestSuite) TestError() {
 		repository := persistence.NewGormVehiclesRepository(transaction)
 
 		// when
-		err := repository.Update(&vehicle)
+		err := repository.Save(&vehicle)
 
 		// then
 		suite.Error(err)
@@ -119,7 +130,7 @@ func (suite *GormVehiclesRepositoryTestSuite) TestError() {
 
 	suite.Run("should return an error when the application fails to list the vehicles", func() {
 		// given
-		input := dtos.ListVehiclesInput{}
+		input := listvehicles.Input{}
 		dialector := postgres.Open("")
 		transaction, _ := gorm.Open(dialector, &gorm.Config{})
 

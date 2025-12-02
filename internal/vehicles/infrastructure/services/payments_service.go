@@ -1,6 +1,7 @@
 package services
 
 import (
+	"errors"
 	"fmt"
 	"net/http"
 
@@ -40,11 +41,11 @@ func (s *PaymentsService) ProcessPayment(cpf string, amount float64) error {
 	}
 
 	if httpResponse.StatusCode() == http.StatusBadRequest {
-		return fmt.Errorf("bad request: invalid payment data")
+		return errors.New("bad request: invalid payment data")
 	}
 
 	if httpResponse.StatusCode() == http.StatusInternalServerError {
-		return fmt.Errorf("internal server error: payment service unavailable")
+		return errors.New("internal server error: payment service unavailable")
 	}
 
 	if httpResponse.StatusCode() != http.StatusOK && httpResponse.StatusCode() != http.StatusCreated {
