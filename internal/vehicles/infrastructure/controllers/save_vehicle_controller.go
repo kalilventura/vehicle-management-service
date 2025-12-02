@@ -5,21 +5,31 @@ import (
 
 	shared "github.com/kalilventura/vehicle-management/internal/shared/domain/entities"
 	"github.com/kalilventura/vehicle-management/internal/shared/infrastructure/controllers"
-	"github.com/kalilventura/vehicle-management/internal/shared/infrastructure/controllers/helpers"
-	"github.com/kalilventura/vehicle-management/internal/vehicles/domain/commands"
-	"github.com/kalilventura/vehicle-management/internal/vehicles/domain/entities"
+	"github.com/kalilventura/vehicle-management/internal/vehicles/application/dtos"
+	"github.com/kalilventura/vehicle-management/internal/vehicles/application/use-cases/create-vehicle"
 	"github.com/kalilventura/vehicle-management/internal/vehicles/infrastructure/controllers/requests"
 	"github.com/kalilventura/vehicle-management/internal/vehicles/infrastructure/controllers/responses"
+	"github.com/kalilventura/vehicle-management/internal/vehicles/presentation/filters"
+	"github.com/kalilventura/vehicle-management/internal/vehicles/presentation/mappers"
 	"github.com/labstack/echo/v4"
-	logger "github.com/sirupsen/logrus"
 )
 
 type SaveVehicleController struct {
-	command commands.SaveVehicle
+	service         *createvehicle.CreateVehicleService
+	exceptionFilter *filters.VehicleExceptionFilter
+	responseMapper  *mappers.VehicleResponseMapper
 }
 
-func NewSaveVehicleController(command commands.SaveVehicle) *SaveVehicleController {
-	return &SaveVehicleController{command}
+func NewSaveVehicleController(
+	service *createvehicle.CreateVehicleService,
+	exceptionFilter *filters.VehicleExceptionFilter,
+	responseMapper *mappers.VehicleResponseMapper,
+) *SaveVehicleController {
+	return &SaveVehicleController{
+		service:         service,
+		exceptionFilter: exceptionFilter,
+		responseMapper:  responseMapper,
+	}
 }
 
 func (ctrl *SaveVehicleController) GetBind() shared.ControllerBind {
@@ -49,53 +59,51 @@ func (ctrl *SaveVehicleController) GetBind() shared.ControllerBind {
 func (ctrl *SaveVehicleController) Execute(ectx echo.Context) error {
 	vehicleRequest := new(requests.CreateVehicleRequest)
 	if err := ectx.Bind(vehicleRequest); err != nil {
-		return ctrl.onInvalid(ectx, err)
+		return ctrl.exceptionFilter.HandleError(ectx, err)
 	}
 
-	entity, domainErr := vehicleRequest.ToDomain()
-	if domainErr != nil {
-		return ctrl.onInvalid(ectx, domainErr)
+	// Convert request to application DTO
+	createDTO := dtos.CreateVehicleDTO{
+		Brand:              vehicleRequest.Brand,
+		Model:              vehicleRequest.Model,
+		Color:              vehicleRequest.Color,
+		Description:        vehicleRequest.Description,
+		Price:              vehicleRequest.Price,
+		BodyType:           vehicleRequest.BodyType,
+		Transmission:       vehicleRequest.Transmission,
+		FuelType:           vehicleRequest.FuelType,
+		Mileage:            vehicleRequest.Mileage,
+		Doors:              vehicleRequest.Doors,
+		Engine:             vehicleRequest.Engine,
+		Year:               vehicleRequest.Year,
+		Condition:          vehicleRequest.Condition,
+		HasAirConditioning: vehicleRequest.HasAirConditioning,
+		HasAirbag:          vehicleRequest.HasAirbag,
+		HasAbsBrakes:       vehicleRequest.HasAbsBrakes,
+		HasPowerSteering:   vehicleRequest.HasPowerSteering,
+		HasPowerWindows:    vehicleRequest.HasPowerWindows,
+		HasPowerLocks:      vehicleRequest.HasPowerLocks,
+		HasMultimedia:      vehicleRequest.HasMultimedia,
+		HasAlarm:           vehicleRequest.HasAlarm,
+		HasTractionControl: vehicleRequest.HasTractionControl,
+		HasRearCamera:      vehicleRequest.HasRearCamera,
+		HasParkingSensors:  vehicleRequest.HasParkingSensors,
 	}
 
-	var handler error
-	listeners := commands.SaveVehicleListeners{
-		OnSuccess: func(vehicle *entities.Vehicle) {
-			handler = ctrl.onSuccess(ectx, vehicle)
-		},
-		OnNotValid: func(err error) {
-			handler = ctrl.onInvalid(ectx, err)
-		},
-		OnInternalServerError: func(err error) {
-			handler = ctrl.onError(ectx, err)
-		},
+	// Execute use case
+	responseDTO, err := ctrl.service.Execute(createDTO)
+	if err != nil {
+		return ctrl.exceptionFilter.HandleError(ectx, err)
 	}
-	ctrl.command.Execute(entity, listeners)
-	return handler
-}
 
-func (ctrl *SaveVehicleController) onSuccess(ectx echo.Context, vehicle *entities.Vehicle) error {
-	response := controllers.NewSuccessResponse(http.StatusCreated, responses.NewVehicleResponse(vehicle))
+	// Convert DTO to response format
+	response := ctrl.responseMapper.ToResponse(responseDTO)
 
-	ectx.Response().Header().Set(echo.HeaderLocation, "/v1/vehicles/"+vehicle.ID)
-	ectx.Response().Header().Set("X-Resource-ID", vehicle.ID)
+	// Set headers
+	ectx.Response().Header().Set(echo.HeaderLocation, "/v1/vehicles/"+responseDTO.ID)
+	ectx.Response().Header().Set("X-Resource-ID", responseDTO.ID)
 
-	return ectx.JSON(http.StatusCreated, response)
-}
-
-func (ctrl *SaveVehicleController) onInvalid(ectx echo.Context, err error) error {
-	validationErrors := helpers.ExtractValidationErrors(err)
-	response := controllers.NewErrorResponse(
-		http.StatusBadRequest,
-		validationErrors,
-	)
-	return ectx.JSON(http.StatusBadRequest, response)
-}
-
-func (ctrl *SaveVehicleController) onError(ectx echo.Context, err error) error {
-	logger.Errorf("Error occured %v", err)
-	response := controllers.NewErrorResponse(
-		http.StatusInternalServerError,
-		nil,
-	)
-	return ectx.JSON(http.StatusInternalServerError, response)
+	// Return success response
+	successResponse := controllers.NewSuccessResponse(http.StatusCreated, response)
+	return ectx.JSON(http.StatusCreated, successResponse)
 }

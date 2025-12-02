@@ -54,6 +54,15 @@ func (f *VehicleExceptionFilter) HandleError(ectx echo.Context, err error) error
 			"message": e.Message,
 		}
 
+	case exceptions.PaymentException:
+		statusCode = http.StatusBadRequest
+		message = e.Error()
+		details = map[string]interface{}{
+			"cpf":    e.CPF,
+			"amount": e.Amount,
+			"reason": e.Reason,
+		}
+
 	default:
 		// Check for shared domain errors
 		if err == domainerr.ErrRecordNotFound {

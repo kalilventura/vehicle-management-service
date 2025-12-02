@@ -1,6 +1,9 @@
 package responses
 
-import "github.com/kalilventura/vehicle-management/internal/vehicles/domain/entities"
+import (
+	"github.com/kalilventura/vehicle-management/internal/vehicles/application/dtos"
+	"github.com/kalilventura/vehicle-management/internal/vehicles/domain/entities"
+)
 
 // VehicleViewResponse
 // @Description basic Vehicle information
@@ -21,5 +24,16 @@ func NewVehicleViewResponse(vehicle entities.Vehicle) VehicleViewResponse {
 		Model:   vehicle.Model,
 		Mileage: vehicle.Specification.GetMileage(),
 		Year:    vehicle.GetYear(),
+	}
+}
+
+func NewVehicleViewResponseFromDTO(dto dtos.VehicleResponseDTO) VehicleViewResponse {
+	return VehicleViewResponse{
+		ID:      dto.ID,
+		Brand:   dto.Brand,
+		Price:   dto.Price,
+		Model:   dto.Model,
+		Mileage: dto.Mileage,
+		Year:    dto.Year,
 	}
 }

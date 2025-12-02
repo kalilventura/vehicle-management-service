@@ -5,21 +5,31 @@ import (
 
 	shared "github.com/kalilventura/vehicle-management/internal/shared/domain/entities"
 	"github.com/kalilventura/vehicle-management/internal/shared/infrastructure/controllers"
-	"github.com/kalilventura/vehicle-management/internal/shared/infrastructure/controllers/helpers"
-	"github.com/kalilventura/vehicle-management/internal/vehicles/domain/commands"
+	"github.com/kalilventura/vehicle-management/internal/vehicles/application/use-cases/update-vehicle"
 	"github.com/kalilventura/vehicle-management/internal/vehicles/domain/entities"
 	"github.com/kalilventura/vehicle-management/internal/vehicles/infrastructure/controllers/requests"
 	"github.com/kalilventura/vehicle-management/internal/vehicles/infrastructure/controllers/responses"
+	"github.com/kalilventura/vehicle-management/internal/vehicles/presentation/filters"
+	"github.com/kalilventura/vehicle-management/internal/vehicles/presentation/mappers"
 	"github.com/labstack/echo/v4"
-	logger "github.com/sirupsen/logrus"
 )
 
 type UpdateVehicleController struct {
-	command commands.UpdateVehicle
+	service        *updatevehicle.UpdateVehicleService
+	exceptionFilter *filters.VehicleExceptionFilter
+	responseMapper  *mappers.VehicleResponseMapper
 }
 
-func NewUpdateVehicleController(command commands.UpdateVehicle) *UpdateVehicleController {
-	return &UpdateVehicleController{command}
+func NewUpdateVehicleController(
+	service *updatevehicle.UpdateVehicleService,
+	exceptionFilter *filters.VehicleExceptionFilter,
+	responseMapper *mappers.VehicleResponseMapper,
+) *UpdateVehicleController {
+	return &UpdateVehicleController{
+		service:        service,
+		exceptionFilter: exceptionFilter,
+		responseMapper: responseMapper,
+	}
 }
 
 func (ctrl *UpdateVehicleController) GetBind() shared.ControllerBind {
@@ -49,63 +59,28 @@ func (ctrl *UpdateVehicleController) GetBind() shared.ControllerBind {
 // @Failure      500     {object}  controllers.ErrorResponse "Internal Server Error"
 // @Router       /v1/vehicles/{id} [patch]
 func (ctrl *UpdateVehicleController) Execute(ectx echo.Context) error {
-	var handler error
 	id := ectx.Param("id")
 
 	request := new(requests.UpdateVehicleRequest)
 	if err := ectx.Bind(request); err != nil {
-		return ctrl.onInvalid(ectx, err)
+		return ctrl.exceptionFilter.HandleError(ectx, err)
 	}
 
 	domain, domainErr := request.ToDomain(id)
 	if domainErr != nil {
-		return ctrl.onInvalid(ectx, domainErr)
+		return ctrl.exceptionFilter.HandleError(ectx, domainErr)
 	}
 
-	listeners := commands.UpdateVehicleListeners{
-		OnSuccess: func(vehicle *entities.UpdateVehicleInput) {
-			handler = ctrl.onSuccess(ectx, vehicle)
-		},
-		OnNotFound: func() {
-			handler = ctrl.onNotFound(ectx)
-		},
-		OnInternalServerError: func(err error) {
-			handler = ctrl.onError(ectx, err)
-		},
+	// Execute use case
+	responseDTO, err := ctrl.service.Execute(domain)
+	if err != nil {
+		return ctrl.exceptionFilter.HandleError(ectx, err)
 	}
-	ctrl.command.Execute(domain, listeners)
-	return handler
-}
 
-func (ctrl *UpdateVehicleController) onSuccess(ectx echo.Context, vehicle *entities.UpdateVehicleInput) error {
-	updateResp := responses.NewUpdateResponse(vehicle)
-	response := controllers.NewSuccessResponse(http.StatusOK, updateResp)
-	return ectx.JSON(http.StatusOK, response)
-}
+	// Convert DTO to response format
+	response := ctrl.responseMapper.ToResponse(responseDTO)
 
-func (ctrl *UpdateVehicleController) onNotFound(ectx echo.Context) error {
-	validationErrors := map[string]string{"message": "The requested vehicle was not found"}
-	response := controllers.NewErrorResponse(
-		http.StatusNotFound,
-		validationErrors,
-	)
-	return ectx.JSON(http.StatusNotFound, response)
-}
-
-func (ctrl *UpdateVehicleController) onInvalid(ectx echo.Context, err error) error {
-	validationErrors := helpers.ExtractValidationErrors(err)
-	response := controllers.NewErrorResponse(
-		http.StatusBadRequest,
-		validationErrors,
-	)
-	return ectx.JSON(http.StatusBadRequest, response)
-}
-
-func (ctrl *UpdateVehicleController) onError(ectx echo.Context, err error) error {
-	logger.Errorf("Error occured %v", err)
-	response := controllers.NewErrorResponse(
-		http.StatusInternalServerError,
-		nil,
-	)
-	return ectx.JSON(http.StatusInternalServerError, response)
+	// Return success response
+	successResponse := controllers.NewSuccessResponse(http.StatusOK, response)
+	return ectx.JSON(http.StatusOK, successResponse)
 }

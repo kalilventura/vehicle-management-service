@@ -5,19 +5,29 @@ import (
 
 	shared "github.com/kalilventura/vehicle-management/internal/shared/domain/entities"
 	"github.com/kalilventura/vehicle-management/internal/shared/infrastructure/controllers"
-	"github.com/kalilventura/vehicle-management/internal/vehicles/domain/commands"
-	"github.com/kalilventura/vehicle-management/internal/vehicles/domain/entities"
+	"github.com/kalilventura/vehicle-management/internal/vehicles/application/use-cases/get-vehicle"
 	"github.com/kalilventura/vehicle-management/internal/vehicles/infrastructure/controllers/responses"
+	"github.com/kalilventura/vehicle-management/internal/vehicles/presentation/filters"
+	"github.com/kalilventura/vehicle-management/internal/vehicles/presentation/mappers"
 	"github.com/labstack/echo/v4"
-	logger "github.com/sirupsen/logrus"
 )
 
 type GetVehicleByIdController struct {
-	command commands.GetVehicleByID
+	service        *getvehicle.GetVehicleService
+	exceptionFilter *filters.VehicleExceptionFilter
+	responseMapper  *mappers.VehicleResponseMapper
 }
 
-func NewGetVehicleByIdController(command commands.GetVehicleByID) *GetVehicleByIdController {
-	return &GetVehicleByIdController{command}
+func NewGetVehicleByIdController(
+	service *getvehicle.GetVehicleService,
+	exceptionFilter *filters.VehicleExceptionFilter,
+	responseMapper *mappers.VehicleResponseMapper,
+) *GetVehicleByIdController {
+	return &GetVehicleByIdController{
+		service:        service,
+		exceptionFilter: exceptionFilter,
+		responseMapper: responseMapper,
+	}
 }
 
 func (ctrl *GetVehicleByIdController) GetBind() shared.ControllerBind {
@@ -43,45 +53,18 @@ func (ctrl *GetVehicleByIdController) GetBind() shared.ControllerBind {
 // @Failure      500  {object}  controllers.ErrorResponse "Internal Server Error"
 // @Router       /v1/vehicles/{id} [get]
 func (ctrl *GetVehicleByIdController) Execute(ectx echo.Context) error {
-	id := ectx.Param("id")
+	vehicleID := ectx.Param("id")
 
-	var handler error
-	listeners := commands.GetVehicleByIDListeners{
-		OnSuccess: func(vehicle *entities.Vehicle) {
-			handler = ctrl.onSuccess(ectx, vehicle)
-		},
-		OnNotFound: func() {
-			handler = ctrl.onNotFound(ectx)
-		},
-		OnInternalServerError: func(err error) {
-			handler = ctrl.onError(ectx, err)
-		},
+	// Execute use case
+	responseDTO, err := ctrl.service.Execute(vehicleID)
+	if err != nil {
+		return ctrl.exceptionFilter.HandleError(ectx, err)
 	}
-	ctrl.command.Execute(id, listeners)
-	return handler
-}
 
-func (ctrl *GetVehicleByIdController) onSuccess(ectx echo.Context, vehicle *entities.Vehicle) error {
-	response := controllers.NewSuccessResponse(http.StatusOK, responses.NewVehicleResponse(vehicle))
-	return ectx.JSON(http.StatusOK, response)
-}
+	// Convert DTO to response format
+	response := ctrl.responseMapper.ToResponse(responseDTO)
 
-func (ctrl *GetVehicleByIdController) onNotFound(ectx echo.Context) error {
-	validationErrors := map[string]string{
-		"message": "The requested vehicle was not found",
-	}
-	response := controllers.NewErrorResponse(
-		http.StatusNotFound,
-		validationErrors,
-	)
-	return ectx.JSON(http.StatusNotFound, response)
-}
-
-func (ctrl *GetVehicleByIdController) onError(ectx echo.Context, err error) error {
-	logger.Errorf("Error occured %v", err)
-	response := controllers.NewErrorResponse(
-		http.StatusInternalServerError,
-		nil,
-	)
-	return ectx.JSON(http.StatusInternalServerError, response)
+	// Return success response
+	successResponse := controllers.NewSuccessResponse(http.StatusOK, response)
+	return ectx.JSON(http.StatusOK, successResponse)
 }

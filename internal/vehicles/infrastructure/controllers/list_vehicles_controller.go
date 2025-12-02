@@ -5,20 +5,27 @@ import (
 
 	shared "github.com/kalilventura/vehicle-management/internal/shared/domain/entities"
 	"github.com/kalilventura/vehicle-management/internal/shared/infrastructure/controllers"
-	"github.com/kalilventura/vehicle-management/internal/vehicles/domain/commands"
-	"github.com/kalilventura/vehicle-management/internal/vehicles/domain/entities"
+	"github.com/kalilventura/vehicle-management/internal/vehicles/application/use-cases/list-vehicles"
+	"github.com/kalilventura/vehicle-management/internal/vehicles/domain/entities/dtos"
 	"github.com/kalilventura/vehicle-management/internal/vehicles/infrastructure/controllers/requests"
 	"github.com/kalilventura/vehicle-management/internal/vehicles/infrastructure/controllers/responses"
+	"github.com/kalilventura/vehicle-management/internal/vehicles/presentation/filters"
 	"github.com/labstack/echo/v4"
-	logger "github.com/sirupsen/logrus"
 )
 
 type ListVehiclesController struct {
-	command commands.ListVehicles
+	service        *listvehicles.ListVehiclesService
+	exceptionFilter *filters.VehicleExceptionFilter
 }
 
-func NewListVehiclesController(command commands.ListVehicles) *ListVehiclesController {
-	return &ListVehiclesController{command}
+func NewListVehiclesController(
+	service *listvehicles.ListVehiclesService,
+	exceptionFilter *filters.VehicleExceptionFilter,
+) *ListVehiclesController {
+	return &ListVehiclesController{
+		service:        service,
+		exceptionFilter: exceptionFilter,
+	}
 }
 
 func (ctrl *ListVehiclesController) GetBind() shared.ControllerBind {
@@ -51,25 +58,29 @@ func (ctrl *ListVehiclesController) GetBind() shared.ControllerBind {
 func (ctrl *ListVehiclesController) Execute(ectx echo.Context) error {
 	searchParams, err := ctrl.GetQueryParams(ectx)
 	if err != nil {
-		return ectx.JSON(http.StatusBadRequest, "bad request")
+		return ctrl.exceptionFilter.HandleError(ectx, err)
 	}
 
 	entity, err := searchParams.ToDomain()
 	if err != nil {
-		return ectx.JSON(http.StatusBadRequest, err)
+		return ctrl.exceptionFilter.HandleError(ectx, err)
 	}
 
-	var handler error
-	listeners := commands.ListVehiclesListeners{
-		OnSuccess: func(vehicles *shared.PaginatedEntity[entities.Vehicle]) {
-			handler = ctrl.onSuccess(ectx, vehicles)
-		},
-		OnInternalServerError: func(err error) {
-			handler = ctrl.onInternalServerError(ectx, err)
-		},
+	// Execute use case
+	result, err := ctrl.service.Execute(*entity)
+	if err != nil {
+		return ctrl.exceptionFilter.HandleError(ectx, err)
 	}
-	ctrl.command.Execute(*entity, listeners)
-	return handler
+
+	// Convert DTOs to response format
+	var responseList []responses.VehicleViewResponse
+	for _, dto := range result.Content {
+		responseList = append(responseList, responses.NewVehicleViewResponseFromDTO(dto))
+	}
+
+	// Return paginated response
+	response := controllers.NewPaginatedResponse(responseList, result.Pagination)
+	return ectx.JSON(http.StatusOK, response)
 }
 
 func (ctrl *ListVehiclesController) GetQueryParams(ectx echo.Context) (*requests.ListVehiclesQueryParams, error) {
@@ -86,23 +97,3 @@ func (ctrl *ListVehiclesController) GetQueryParams(ectx echo.Context) (*requests
 	return searchParams, nil
 }
 
-func (ctrl *ListVehiclesController) onSuccess(
-	ectx echo.Context, vehicles *shared.PaginatedEntity[entities.Vehicle]) error {
-	var responseList []responses.VehicleViewResponse
-	for _, vehicle := range vehicles.Content {
-		entry := responses.NewVehicleViewResponse(vehicle)
-		responseList = append(responseList, entry)
-	}
-
-	response := controllers.NewPaginatedResponse(responseList, vehicles.Pagination)
-	return ectx.JSON(http.StatusOK, response)
-}
-
-func (ctrl *ListVehiclesController) onInternalServerError(ectx echo.Context, err error) error {
-	logger.Errorf("Error occured %v", err)
-	response := controllers.NewErrorResponse(
-		http.StatusInternalServerError,
-		nil,
-	)
-	return ectx.JSON(http.StatusInternalServerError, response)
-}

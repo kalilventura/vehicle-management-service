@@ -5,20 +5,25 @@ import (
 
 	shared "github.com/kalilventura/vehicle-management/internal/shared/domain/entities"
 	"github.com/kalilventura/vehicle-management/internal/shared/infrastructure/controllers"
-	"github.com/kalilventura/vehicle-management/internal/shared/infrastructure/controllers/helpers"
-	"github.com/kalilventura/vehicle-management/internal/vehicles/domain/commands"
-	"github.com/kalilventura/vehicle-management/internal/vehicles/domain/entities"
+	"github.com/kalilventura/vehicle-management/internal/vehicles/application/use-cases/sell-vehicle"
 	"github.com/kalilventura/vehicle-management/internal/vehicles/infrastructure/controllers/requests"
+	"github.com/kalilventura/vehicle-management/internal/vehicles/presentation/filters"
 	"github.com/labstack/echo/v4"
-	logger "github.com/sirupsen/logrus"
 )
 
 type SellVehicleController struct {
-	command commands.SellVehicle
+	service        *sellvehicle.SellVehicleService
+	exceptionFilter *filters.VehicleExceptionFilter
 }
 
-func NewSellVehicleController(command commands.SellVehicle) *SellVehicleController {
-	return &SellVehicleController{command}
+func NewSellVehicleController(
+	service *sellvehicle.SellVehicleService,
+	exceptionFilter *filters.VehicleExceptionFilter,
+) *SellVehicleController {
+	return &SellVehicleController{
+		service:        service,
+		exceptionFilter: exceptionFilter,
+	}
 }
 
 func (ctrl *SellVehicleController) GetBind() shared.ControllerBind {
@@ -50,49 +55,33 @@ func (ctrl *SellVehicleController) GetBind() shared.ControllerBind {
 // @Failure      500  {object}  controllers.ErrorResponse "Internal Server Error"
 // @Router       /v1/vehicles/{id}/sales [post]
 func (ctrl *SellVehicleController) Execute(ectx echo.Context) error {
-	var handler error
 	vehicleRequest := new(requests.SellVehicleRequest)
 	if err := ectx.Bind(vehicleRequest); err != nil {
-		return ctrl.onInvalid(ectx, err)
+		return ctrl.exceptionFilter.HandleError(ectx, err)
 	}
-	entity := vehicleRequest.ToDomain(ectx.Param("id"))
 
-	listeners := commands.SellVehicleListeners{
-		OnSuccess: func(sell *entities.SellVehicle) {
-			handler = ctrl.onSuccess(ectx, sell)
-		},
-		OnBadRequest: func(err error) {
-			handler = ctrl.onInvalid(ectx, err)
-		},
-		OnInternalServerError: func(err error) {
-			handler = ctrl.onInternalServerError(ectx, err)
-		},
+	vehicleID := ectx.Param("id")
+	entity := vehicleRequest.ToDomain(vehicleID)
+
+	// Convert to application DTO
+	sellDTO := sellvehicle.SellVehicleDTO{
+		VehicleID: entity.VehicleID,
+		CPF:       entity.Cpf,
+		Amount:    entity.Amount,
 	}
-	ctrl.command.Execute(entity, listeners)
-	return handler
-}
 
-func (ctrl *SellVehicleController) onSuccess(ectx echo.Context, sell *entities.SellVehicle) error {
-	response := controllers.NewSuccessResponse(http.StatusCreated, sell)
-	ectx.Response().Header().Set("X-Resource-ID", sell.VehicleID)
+	// Execute use case
+	err := ctrl.service.Execute(sellDTO)
+	if err != nil {
+		return ctrl.exceptionFilter.HandleError(ectx, err)
+	}
+
+	// Return success response
+	response := controllers.NewSuccessResponse(http.StatusCreated, map[string]string{
+		"vehicle_id": vehicleID,
+		"status":     "sold",
+	})
+	ectx.Response().Header().Set("X-Resource-ID", vehicleID)
 
 	return ectx.JSON(http.StatusCreated, response)
-}
-
-func (ctrl *SellVehicleController) onInvalid(ectx echo.Context, err error) error {
-	validationErrors := helpers.ExtractValidationErrors(err)
-	response := controllers.NewErrorResponse(
-		http.StatusBadRequest,
-		validationErrors,
-	)
-	return ectx.JSON(http.StatusBadRequest, response)
-}
-
-func (ctrl *SellVehicleController) onInternalServerError(ectx echo.Context, err error) error {
-	logger.Errorf("Error occured %v", err)
-	response := controllers.NewErrorResponse(
-		http.StatusInternalServerError,
-		nil,
-	)
-	return ectx.JSON(http.StatusInternalServerError, response)
 }
