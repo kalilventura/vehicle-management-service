@@ -6,7 +6,7 @@ import (
 	"github.com/kalilventura/vehicle-management/internal/vehicles/domain/value-objects"
 )
 
-// ToResponseDTO converts a Vehicle entity to VehicleResponseDTO
+// ToResponseDTO converts a Vehicle entity to dtos.VehicleResponseDTO
 func ToResponseDTO(vehicle *entities.Vehicle) dtos.VehicleResponseDTO {
 	return dtos.VehicleResponseDTO{
 		ID:                 vehicle.ID(),
@@ -43,7 +43,6 @@ func ToResponseDTO(vehicle *entities.Vehicle) dtos.VehicleResponseDTO {
 
 // ToDomainEntity converts a CreateVehicleDTO to Vehicle entity
 func ToDomainEntity(dto dtos.CreateVehicleDTO) (*entities.Vehicle, error) {
-	// Create value objects
 	price, err := valueobjects.NewPrice(dto.Price, "BRL")
 	if err != nil {
 		return nil, err

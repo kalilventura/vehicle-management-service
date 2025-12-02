@@ -3,12 +3,11 @@ package repositories
 import (
 	global "github.com/kalilventura/vehicle-management/internal/shared/domain/entities"
 	"github.com/kalilventura/vehicle-management/internal/vehicles/domain/entities"
-	"github.com/kalilventura/vehicle-management/internal/vehicles/domain/entities/dtos"
+	valueobjects "github.com/kalilventura/vehicle-management/internal/vehicles/domain/value-objects"
 )
 
 type VehiclesRepository interface {
 	Save(vehicle *entities.Vehicle) error
-	Update(vehicle *entities.UpdateVehicleInput) error
 	GetByID(ID string) (*entities.Vehicle, error)
-	FindWithFilters(input dtos.ListVehiclesInput) (*global.PaginatedEntity[entities.Vehicle], error)
+	FindWithFilters(input valueobjects.ListVehiclesCriteria) (*global.PaginatedEntity[entities.Vehicle], error)
 }

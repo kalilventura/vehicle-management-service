@@ -22,18 +22,15 @@ func NewCreateVehicleService(
 
 // Execute executes the creation vehicle use case
 func (s *CreateVehicleService) Execute(dto dtos.CreateVehicleDTO) (dtos.VehicleResponseDTO, error) {
-	// Convert DTO to domain entity
 	vehicle, err := factories.ToDomainEntity(dto)
 	if err != nil {
 		return dtos.VehicleResponseDTO{}, err
 	}
 
-	// Save vehicle
-	if err := s.repository.Save(vehicle); err != nil {
-		return dtos.VehicleResponseDTO{}, err
+	if saveErr := s.repository.Save(vehicle); saveErr != nil {
+		return dtos.VehicleResponseDTO{}, saveErr
 	}
 
-	// Convert to response DTO
 	response := factories.ToResponseDTO(vehicle)
 
 	// Note: Domain events should be published here by the infrastructure layer

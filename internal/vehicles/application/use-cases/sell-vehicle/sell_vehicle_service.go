@@ -12,7 +12,7 @@ import (
 
 // SellVehicleService is the application service for selling a vehicle
 type SellVehicleService struct {
-	repository     repositories.VehiclesRepository
+	repository      repositories.VehiclesRepository
 	paymentsService services.PaymentsService
 }
 
@@ -22,14 +22,13 @@ func NewSellVehicleService(
 	paymentsService services.PaymentsService,
 ) *SellVehicleService {
 	return &SellVehicleService{
-		repository:     repository,
+		repository:      repository,
 		paymentsService: paymentsService,
 	}
 }
 
 // Execute executes the sell vehicle use case
 func (s *SellVehicleService) Execute(dto SellVehicleDTO) error {
-	// Get vehicle
 	vehicle, err := s.repository.GetByID(dto.VehicleID)
 	if err != nil {
 		if errors.Is(err, domainerr.ErrRecordNotFound) {
@@ -43,31 +42,26 @@ func (s *SellVehicleService) Execute(dto SellVehicleDTO) error {
 	}
 
 	// Process payment
-	if err := s.paymentsService.ProcessPayment(dto.CPF, dto.Amount); err != nil {
-		// Check if it's a bad request error
-		if strings.Contains(err.Error(), "bad request") {
+	if paymentErr := s.paymentsService.ProcessPayment(dto.CPF, dto.Amount); paymentErr != nil {
+		if strings.Contains(paymentErr.Error(), "bad request") {
 			return exceptions.NewPaymentException(dto.CPF, dto.Amount, "invalid payment data")
 		}
-		// For other payment errors, return as-is (will be handled as 500)
-		return err
+		return paymentErr
 	}
 
-	// Sell vehicle (domain logic)
-	if err := vehicle.Sell(); err != nil {
-		// Check if it's a status error
-		if strings.Contains(err.Error(), "cannot be sold") {
+	if sellErr := vehicle.Sell(); sellErr != nil {
+		if strings.Contains(sellErr.Error(), "cannot be sold") {
 			return exceptions.NewInvalidVehicleStatusException(
 				dto.VehicleID,
 				vehicle.Status().Value(),
 				"sell",
 			)
 		}
-		return err
+		return sellErr
 	}
 
-	// Save vehicle
-	if err := s.repository.Save(vehicle); err != nil {
-		return err
+	if saveErr := s.repository.Save(vehicle); saveErr != nil {
+		return saveErr
 	}
 
 	// Note: Domain events should be published here by the infrastructure layer
@@ -75,4 +69,3 @@ func (s *SellVehicleService) Execute(dto SellVehicleDTO) error {
 
 	return nil
 }
-

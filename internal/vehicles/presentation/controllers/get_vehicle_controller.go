@@ -1,42 +1,42 @@
 package controllers
 
 import (
-  "net/http"
+	"net/http"
 
-  shared "github.com/kalilventura/vehicle-management/internal/shared/domain/entities"
-  "github.com/kalilventura/vehicle-management/internal/shared/infrastructure/controllers"
-  "github.com/kalilventura/vehicle-management/internal/vehicles/application/use-cases/get-vehicle"
-  "github.com/kalilventura/vehicle-management/internal/vehicles/presentation/filters"
-  "github.com/kalilventura/vehicle-management/internal/vehicles/presentation/mappers"
-  "github.com/labstack/echo/v4"
+	shared "github.com/kalilventura/vehicle-management/internal/shared/domain/entities"
+	"github.com/kalilventura/vehicle-management/internal/shared/infrastructure/controllers"
+	"github.com/kalilventura/vehicle-management/internal/vehicles/application/use-cases/get-vehicle"
+	"github.com/kalilventura/vehicle-management/internal/vehicles/presentation/filters"
+	"github.com/kalilventura/vehicle-management/internal/vehicles/presentation/mappers"
+	"github.com/labstack/echo/v4"
 )
 
 // GetVehicleController handles GET /vehicles/:id requests
 type GetVehicleController struct {
-  service         *getvehicle.GetVehicleService
-  exceptionFilter *filters.VehicleExceptionFilter
-  responseMapper  *mappers.VehicleResponseMapper
+	service         *getvehicle.GetVehicleService
+	exceptionFilter *filters.VehicleExceptionFilter
+	responseMapper  *mappers.VehicleResponseMapper
 }
 
 // NewGetVehicleController creates a new GetVehicleController
 func NewGetVehicleController(
-  service *getvehicle.GetVehicleService,
-  exceptionFilter *filters.VehicleExceptionFilter,
-  responseMapper *mappers.VehicleResponseMapper,
+	service *getvehicle.GetVehicleService,
+	exceptionFilter *filters.VehicleExceptionFilter,
+	responseMapper *mappers.VehicleResponseMapper,
 ) *GetVehicleController {
-  return &GetVehicleController{
-    service:         service,
-    exceptionFilter: exceptionFilter,
-    responseMapper:  responseMapper,
-  }
+	return &GetVehicleController{
+		service:         service,
+		exceptionFilter: exceptionFilter,
+		responseMapper:  responseMapper,
+	}
 }
 
 func (ctrl *GetVehicleController) GetBind() shared.ControllerBind {
-  return shared.ControllerBind{
-    Method:       http.MethodGet,
-    Version:      "v1",
-    RelativePath: "/vehicles/:id",
-  }
+	return shared.ControllerBind{
+		Method:       http.MethodGet,
+		Version:      "v1",
+		RelativePath: "/vehicles/:id",
+	}
 }
 
 // Execute handles the get vehicle by ID request
@@ -52,19 +52,19 @@ func (ctrl *GetVehicleController) GetBind() shared.ControllerBind {
 // @Failure      500  {object}  controllers.ErrorResponse "Internal Server Error"
 // @Router       /v1/vehicles/{id} [get]
 func (ctrl *GetVehicleController) Execute(ectx echo.Context) error {
-  vehicleID := ectx.Param("id")
+	vehicleID := ectx.Param("id")
 
-  // Execute use case
-  responseDTO, err := ctrl.service.Execute(vehicleID)
-  if err != nil {
-    // Let exception filter handle the error and return appropriate status code
-    return ctrl.exceptionFilter.HandleError(ectx, err)
-  }
+	// Execute use case
+	responseDTO, err := ctrl.service.Execute(vehicleID)
+	if err != nil {
+		// Let exception filter handle the error and return appropriate status code
+		return ctrl.exceptionFilter.HandleError(ectx, err)
+	}
 
-  // Convert DTO to response format
-  response := ctrl.responseMapper.ToResponse(responseDTO)
+	// Convert DTO to response format
+	response := ctrl.responseMapper.ToResponse(responseDTO)
 
-  // Return success response
-  successResponse := controllers.NewSuccessResponse(http.StatusOK, response)
-  return ectx.JSON(http.StatusOK, successResponse)
+	// Return success response
+	successResponse := controllers.NewSuccessResponse(http.StatusOK, response)
+	return ectx.JSON(http.StatusOK, successResponse)
 }

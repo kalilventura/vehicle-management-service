@@ -5,6 +5,7 @@ import (
 	appdtos "github.com/kalilventura/vehicle-management/internal/vehicles/application/dtos"
 	"github.com/kalilventura/vehicle-management/internal/vehicles/application/factories"
 	"github.com/kalilventura/vehicle-management/internal/vehicles/domain/repositories"
+	valueobjects "github.com/kalilventura/vehicle-management/internal/vehicles/domain/value-objects"
 )
 
 // ListVehiclesService is the application service for listing vehicles
@@ -22,7 +23,8 @@ func NewListVehiclesService(
 }
 
 // Execute executes the list of vehicles use case
-func (s *ListVehiclesService) Execute(input Input) (*global.PaginatedEntity[appdtos.VehicleResponseDTO], error) {
+func (s *ListVehiclesService) Execute(
+	input valueobjects.ListVehiclesCriteria) (*global.PaginatedEntity[appdtos.VehicleResponseDTO], error) {
 	vehicles, err := s.repository.FindWithFilters(input)
 	if err != nil {
 		return nil, err
