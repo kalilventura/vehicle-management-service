@@ -12,11 +12,10 @@ import (
 
 //nolint:gochecknoglobals // requirement for container
 var Container = wire.NewSet(
-	mappers.NewVehicleMapper,
+	factories.NewVehicleMapper,
 	createvehicle.NewCreateVehicleService,
 	getvehicle.NewGetVehicleService,
 	listvehicles.NewListVehiclesService,
 	updatevehicle.NewUpdateVehicleService,
 	sellvehicle.NewSellVehicleService,
 )
-

@@ -38,7 +38,7 @@ func InjectApp() *App {
 	gooseMigrationService := services.NewGooseMigrationService(db, databaseSettings)
 	settings := InjectSettings()
 	gormVehiclesRepository := persistence.NewGormVehiclesRepository(db)
-	vehicleMapper := mappers.NewVehicleMapper()
+	vehicleMapper := factories.NewVehicleMapper()
 	createVehicleService := createvehicle.NewCreateVehicleService(gormVehiclesRepository, vehicleMapper)
 	vehicleExceptionFilter := filters.NewVehicleExceptionFilter()
 	vehicleResponseMapper := mappers2.NewVehicleResponseMapper()

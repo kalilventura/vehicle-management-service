@@ -1,4 +1,4 @@
-package mappers
+package factories
 
 import (
 	"github.com/kalilventura/vehicle-management/internal/vehicles/application/dtos"
@@ -6,33 +6,25 @@ import (
 	"github.com/kalilventura/vehicle-management/internal/vehicles/domain/value-objects"
 )
 
-// VehicleMapper maps between domain entities and DTOs
-type VehicleMapper struct{}
-
-// NewVehicleMapper creates a new VehicleMapper
-func NewVehicleMapper() *VehicleMapper {
-	return &VehicleMapper{}
-}
-
 // ToResponseDTO converts a Vehicle entity to VehicleResponseDTO
-func (m *VehicleMapper) ToResponseDTO(vehicle *entities.Vehicle) dtos.VehicleResponseDTO {
+func ToResponseDTO(vehicle *entities.Vehicle) dtos.VehicleResponseDTO {
 	return dtos.VehicleResponseDTO{
-		ID:            vehicle.ID(),
-		Brand:         vehicle.Brand(),
-		Model:         vehicle.Model(),
-		Color:         vehicle.Color(),
-		Description:   vehicle.Description(),
-		Price:         vehicle.Price().Amount(),
-		Currency:      vehicle.Price().Currency(),
-		BodyType:      vehicle.Specification().BodyType().Value(),
-		Transmission:  vehicle.Specification().Transmission().Value(),
-		FuelType:      vehicle.Specification().FuelType().Value(),
-		Mileage:       vehicle.Specification().Mileage().Value(),
-		Doors:         vehicle.Specification().Doors().Value(),
-		Engine:        vehicle.Specification().Engine(),
-		Year:          vehicle.Year().Value(),
-		Status:        vehicle.Status().Value(),
-		Condition:     vehicle.Condition().Value(),
+		ID:                 vehicle.ID(),
+		Brand:              vehicle.Brand(),
+		Model:              vehicle.Model(),
+		Color:              vehicle.Color(),
+		Description:        vehicle.Description(),
+		Price:              vehicle.Price().Amount(),
+		Currency:           vehicle.Price().Currency(),
+		BodyType:           vehicle.Specification().BodyType().Value(),
+		Transmission:       vehicle.Specification().Transmission().Value(),
+		FuelType:           vehicle.Specification().FuelType().Value(),
+		Mileage:            vehicle.Specification().Mileage().Value(),
+		Doors:              vehicle.Specification().Doors().Value(),
+		Engine:             vehicle.Specification().Engine(),
+		Year:               vehicle.Year().Value(),
+		Status:             vehicle.Status().Value(),
+		Condition:          vehicle.Condition().Value(),
 		HasAirConditioning: vehicle.Features().HasAirConditioning(),
 		HasAirbag:          vehicle.Features().HasAirbag(),
 		HasAbsBrakes:       vehicle.Features().HasAbsBrakes(),
@@ -44,13 +36,13 @@ func (m *VehicleMapper) ToResponseDTO(vehicle *entities.Vehicle) dtos.VehicleRes
 		HasTractionControl: vehicle.Features().HasTractionControl(),
 		HasRearCamera:      vehicle.Features().HasRearCamera(),
 		HasParkingSensors:  vehicle.Features().HasParkingSensors(),
-		CreatedAt:     vehicle.CreatedAt(),
-		UpdatedAt:     vehicle.UpdatedAt(),
+		CreatedAt:          vehicle.CreatedAt(),
+		UpdatedAt:          vehicle.UpdatedAt(),
 	}
 }
 
 // ToDomainEntity converts a CreateVehicleDTO to Vehicle entity
-func (m *VehicleMapper) ToDomainEntity(dto dtos.CreateVehicleDTO) (*entities.Vehicle, error) {
+func ToDomainEntity(dto dtos.CreateVehicleDTO) (*entities.Vehicle, error) {
 	// Create value objects
 	price, err := valueobjects.NewPrice(dto.Price, "BRL")
 	if err != nil {
@@ -134,4 +126,3 @@ func (m *VehicleMapper) ToDomainEntity(dto dtos.CreateVehicleDTO) (*entities.Veh
 		Year:          year,
 	})
 }
-
