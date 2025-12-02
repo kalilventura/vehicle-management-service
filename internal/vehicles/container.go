@@ -3,7 +3,7 @@ package vehicles
 import (
 	"github.com/google/wire"
 	appcontainer "github.com/kalilventura/vehicle-management/internal/vehicles/application"
-	"github.com/kalilventura/vehicle-management/internal/vehicles/infrastructure/repositories"
+	"github.com/kalilventura/vehicle-management/internal/vehicles/infrastructure/persistence"
 	"github.com/kalilventura/vehicle-management/internal/vehicles/infrastructure/services"
 	presentationcontainer "github.com/kalilventura/vehicle-management/internal/vehicles/presentation"
 )

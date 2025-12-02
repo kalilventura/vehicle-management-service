@@ -11,14 +11,14 @@ import (
 
 // PaymentsService implements the domain PaymentsService interface
 type PaymentsService struct {
-	client      *resty.Client
 	paymentsAPI string
+	client      *resty.Client
 }
 
 // NewPaymentsService creates a new PaymentsService
 func NewPaymentsService(settings *global.Settings) *PaymentsService {
 	client := resty.New()
-	return &PaymentsService{client, settings.PaymentsAPI}
+	return &PaymentsService{settings.PaymentsAPI, client}
 }
 
 // ProcessPayment processes a payment

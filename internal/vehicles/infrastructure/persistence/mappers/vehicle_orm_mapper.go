@@ -4,20 +4,20 @@ import (
 	"time"
 
 	"github.com/kalilventura/vehicle-management/internal/vehicles/domain/entities"
-	"github.com/kalilventura/vehicle-management/internal/vehicles/domain/value-objects"
-	"github.com/kalilventura/vehicle-management/internal/vehicles/infrastructure/repositories/models"
+	valueobjects "github.com/kalilventura/vehicle-management/internal/vehicles/domain/value-objects"
+	"github.com/kalilventura/vehicle-management/internal/vehicles/infrastructure/persistence/models"
 )
 
-// VehicleTypeOrmMapper maps between domain entities and TypeORM entities
-type VehicleTypeOrmMapper struct{}
+// VehicleOrmMapper maps between domain entities and TypeORM entities
+type VehicleOrmMapper struct{}
 
-// NewVehicleTypeOrmMapper creates a new VehicleTypeOrmMapper
-func NewVehicleTypeOrmMapper() *VehicleTypeOrmMapper {
-	return &VehicleTypeOrmMapper{}
+// NewVehicleOrmMapper creates a new VehicleOrmMapper
+func NewVehicleOrmMapper() *VehicleOrmMapper {
+	return &VehicleOrmMapper{}
 }
 
 // ToOrmEntity converts a Vehicle domain entity to GormVehicle
-func (m *VehicleTypeOrmMapper) ToOrmEntity(vehicle *entities.Vehicle) *models.GormVehicle {
+func (m *VehicleOrmMapper) ToOrmEntity(vehicle *entities.Vehicle) *models.GormVehicle {
 	updatedAt := vehicle.UpdatedAt()
 	var updatedAtPtr *time.Time
 	if !updatedAt.IsZero() {
@@ -25,21 +25,21 @@ func (m *VehicleTypeOrmMapper) ToOrmEntity(vehicle *entities.Vehicle) *models.Go
 	}
 
 	return &models.GormVehicle{
-		ID:           vehicle.ID(),
-		Brand:        vehicle.Brand(),
-		Model:        vehicle.Model(),
-		Color:        vehicle.Color(),
-		Description:  vehicle.Description(),
-		Price:        vehicle.Price().Amount(),
-		BodyType:     vehicle.Specification().BodyType().Value(),
-		Transmission: vehicle.Specification().Transmission().Value(),
-		FuelType:     vehicle.Specification().FuelType().Value(),
-		Mileage:      vehicle.Specification().Mileage().Value(),
-		Engine:       vehicle.Specification().Engine(),
-		Doors:        vehicle.Specification().Doors().Value(),
-		Year:         vehicle.Year().Value(),
-		Status:       vehicle.Status().Value(),
-		Condition:    vehicle.Condition().Value(),
+		ID:                 vehicle.ID(),
+		Brand:              vehicle.Brand(),
+		Model:              vehicle.Model(),
+		Color:              vehicle.Color(),
+		Description:        vehicle.Description(),
+		Price:              vehicle.Price().Amount(),
+		BodyType:           vehicle.Specification().BodyType().Value(),
+		Transmission:       vehicle.Specification().Transmission().Value(),
+		FuelType:           vehicle.Specification().FuelType().Value(),
+		Mileage:            vehicle.Specification().Mileage().Value(),
+		Engine:             vehicle.Specification().Engine(),
+		Doors:              vehicle.Specification().Doors().Value(),
+		Year:               vehicle.Year().Value(),
+		Status:             vehicle.Status().Value(),
+		Condition:          vehicle.Condition().Value(),
 		HasAirConditioning: vehicle.Features().HasAirConditioning(),
 		HasAirbag:          vehicle.Features().HasAirbag(),
 		HasAbsBrakes:       vehicle.Features().HasAbsBrakes(),
@@ -51,13 +51,13 @@ func (m *VehicleTypeOrmMapper) ToOrmEntity(vehicle *entities.Vehicle) *models.Go
 		HasTractionControl: vehicle.Features().HasTractionControl(),
 		HasRearCamera:      vehicle.Features().HasRearCamera(),
 		HasParkingSensors:  vehicle.Features().HasParkingSensors(),
-		CreatedAt:    vehicle.CreatedAt(),
-		UpdatedAt:    updatedAtPtr,
+		CreatedAt:          vehicle.CreatedAt(),
+		UpdatedAt:          updatedAtPtr,
 	}
 }
 
 // ToDomainEntity converts a GormVehicle to Vehicle domain entity
-func (m *VehicleTypeOrmMapper) ToDomainEntity(ormEntity *models.GormVehicle) (*entities.Vehicle, error) {
+func (m *VehicleOrmMapper) ToDomainEntity(ormEntity *models.GormVehicle) (*entities.Vehicle, error) {
 	// Create value objects
 	price, err := valueobjects.NewPrice(ormEntity.Price, "BRL")
 	if err != nil {
@@ -150,4 +150,3 @@ func (m *VehicleTypeOrmMapper) ToDomainEntity(ormEntity *models.GormVehicle) (*e
 		},
 	)
 }
-

@@ -1,11 +1,12 @@
 package filters
 
 import (
+	"errors"
 	"net/http"
 
+	domainerr "github.com/kalilventura/vehicle-management/internal/shared/domain/errors"
 	"github.com/kalilventura/vehicle-management/internal/shared/infrastructure/controllers"
 	"github.com/kalilventura/vehicle-management/internal/vehicles/domain/exceptions"
-	domainerr "github.com/kalilventura/vehicle-management/internal/shared/domain/errors"
 	"github.com/labstack/echo/v4"
 	logger "github.com/sirupsen/logrus"
 )
@@ -65,7 +66,7 @@ func (f *VehicleExceptionFilter) HandleError(ectx echo.Context, err error) error
 
 	default:
 		// Check for shared domain errors
-		if err == domainerr.ErrRecordNotFound {
+		if errors.Is(err, domainerr.ErrRecordNotFound) {
 			statusCode = http.StatusNotFound
 			message = "resource not found"
 		} else {
@@ -78,10 +79,7 @@ func (f *VehicleExceptionFilter) HandleError(ectx echo.Context, err error) error
 
 	response := controllers.NewErrorResponse(statusCode, details)
 	if message != "" {
-		// Add message to response if needed
 		response.Error = message
 	}
-
 	return ectx.JSON(statusCode, response)
 }
-

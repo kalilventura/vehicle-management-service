@@ -8,22 +8,22 @@ import (
 	domainerr "github.com/kalilventura/vehicle-management/internal/shared/domain/errors"
 	"github.com/kalilventura/vehicle-management/internal/vehicles/domain/entities"
 	"github.com/kalilventura/vehicle-management/internal/vehicles/domain/entities/dtos"
-	"github.com/kalilventura/vehicle-management/internal/vehicles/infrastructure/repositories/mappers"
-	"github.com/kalilventura/vehicle-management/internal/vehicles/infrastructure/repositories/models"
+	"github.com/kalilventura/vehicle-management/internal/vehicles/infrastructure/persistence/mappers"
+	"github.com/kalilventura/vehicle-management/internal/vehicles/infrastructure/persistence/models"
 	"gorm.io/gorm"
 )
 
 // GormVehiclesRepository implements the VehiclesRepository interface using GORM
 type GormVehiclesRepository struct {
 	client *gorm.DB
-	mapper *mappers.VehicleTypeOrmMapper
+	mapper *mappers.VehicleOrmMapper
 }
 
 // NewGormVehiclesRepository creates a new GormVehiclesRepository
 func NewGormVehiclesRepository(client *gorm.DB) *GormVehiclesRepository {
 	return &GormVehiclesRepository{
 		client: client,
-		mapper: mappers.NewVehicleTypeOrmMapper(),
+		mapper: mappers.NewVehicleOrmMapper(),
 	}
 }
 
