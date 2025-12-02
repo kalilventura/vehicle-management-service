@@ -8,9 +8,8 @@ import (
 
 	"github.com/kalilventura/vehicle-management/internal/shared/infrastructure/configuration"
 	listvehicles "github.com/kalilventura/vehicle-management/internal/vehicles/application/use-cases/list-vehicles"
-	entities2 "github.com/kalilventura/vehicle-management/internal/vehicles/domain/entities"
 	valueobjects "github.com/kalilventura/vehicle-management/internal/vehicles/domain/value-objects"
-	persistence "github.com/kalilventura/vehicle-management/internal/vehicles/infrastructure/persistence"
+	"github.com/kalilventura/vehicle-management/internal/vehicles/infrastructure/persistence"
 	"github.com/kalilventura/vehicle-management/test/shared/infrastructure"
 	"github.com/kalilventura/vehicle-management/test/vehicles/domain/builders"
 	"github.com/stretchr/testify/suite"
