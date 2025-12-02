@@ -5,7 +5,7 @@ package requests_test
 import (
 	"testing"
 
-	"github.com/kalilventura/vehicle-management/internal/vehicles/infrastructure/controllers/requests"
+	"github.com/kalilventura/vehicle-management/internal/vehicles/presentation/controllers/requests"
 	"github.com/stretchr/testify/assert"
 )
 

@@ -11,7 +11,7 @@ import (
 	"testing"
 
 	"github.com/brianvoe/gofakeit/v7"
-	"github.com/kalilventura/vehicle-management/internal/vehicles/infrastructure/controllers"
+	"github.com/kalilventura/vehicle-management/internal/vehicles/presentation/controllers"
 	"github.com/kalilventura/vehicle-management/test/vehicles/domain/builders"
 	"github.com/kalilventura/vehicle-management/test/vehicles/domain/commands"
 	builders2 "github.com/kalilventura/vehicle-management/test/vehicles/infrastructure/builders"

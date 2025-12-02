@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 
-	"github.com/kalilventura/vehicle-management/internal/vehicles/infrastructure/controllers/requests"
+	"github.com/kalilventura/vehicle-management/internal/vehicles/presentation/controllers/requests"
 	"github.com/kalilventura/vehicle-management/test/shared/domain/builders"
 )
 

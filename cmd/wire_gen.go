@@ -11,10 +11,17 @@ import (
 	"github.com/kalilventura/vehicle-management/internal/shared/infrastructure/configuration"
 	"github.com/kalilventura/vehicle-management/internal/shared/infrastructure/services"
 	"github.com/kalilventura/vehicle-management/internal/vehicles"
-	"github.com/kalilventura/vehicle-management/internal/vehicles/domain/commands"
+	"github.com/kalilventura/vehicle-management/internal/vehicles/application/mappers"
+	"github.com/kalilventura/vehicle-management/internal/vehicles/application/use-cases/create-vehicle"
+	"github.com/kalilventura/vehicle-management/internal/vehicles/application/use-cases/get-vehicle"
+	"github.com/kalilventura/vehicle-management/internal/vehicles/application/use-cases/list-vehicles"
+	"github.com/kalilventura/vehicle-management/internal/vehicles/application/use-cases/sell-vehicle"
+	"github.com/kalilventura/vehicle-management/internal/vehicles/application/use-cases/update-vehicle"
 	"github.com/kalilventura/vehicle-management/internal/vehicles/infrastructure/controllers"
 	"github.com/kalilventura/vehicle-management/internal/vehicles/infrastructure/repositories"
 	services2 "github.com/kalilventura/vehicle-management/internal/vehicles/infrastructure/services"
+	"github.com/kalilventura/vehicle-management/internal/vehicles/presentation/filters"
+	mappers2 "github.com/kalilventura/vehicle-management/internal/vehicles/presentation/mappers"
 	"os"
 	"strconv"
 )
@@ -30,18 +37,21 @@ func InjectApp() *App {
 	db := configuration.NewDatabaseClient(databaseSettings)
 	gooseMigrationService := services.NewGooseMigrationService(db, databaseSettings)
 	settings := InjectSettings()
-	gormVehiclesRepository := repositories.NewGormVehiclesRepository(db)
-	saveVehicleCommand := commands.NewSaveVehicleCommand(gormVehiclesRepository)
-	saveVehicleController := controllers.NewSaveVehicleController(saveVehicleCommand)
-	getVehicleByIDCommand := commands.NewGetVehicleByIDCommand(gormVehiclesRepository)
-	getVehicleByIdController := controllers.NewGetVehicleByIdController(getVehicleByIDCommand)
-	listVehiclesCommand := commands.NewListVehiclesCommand(gormVehiclesRepository)
-	listVehiclesController := controllers.NewListVehiclesController(listVehiclesCommand)
-	updateVehicleCommand := commands.NewUpdateVehicleCommand(gormVehiclesRepository)
-	updateVehicleController := controllers.NewUpdateVehicleController(updateVehicleCommand)
+	gormVehiclesRepository := persistence.NewGormVehiclesRepository(db)
+	vehicleMapper := mappers.NewVehicleMapper()
+	createVehicleService := createvehicle.NewCreateVehicleService(gormVehiclesRepository, vehicleMapper)
+	vehicleExceptionFilter := filters.NewVehicleExceptionFilter()
+	vehicleResponseMapper := mappers2.NewVehicleResponseMapper()
+	saveVehicleController := controllers.NewSaveVehicleController(createVehicleService, vehicleExceptionFilter, vehicleResponseMapper)
+	getVehicleService := getvehicle.NewGetVehicleService(gormVehiclesRepository, vehicleMapper)
+	getVehicleByIdController := controllers.NewGetVehicleByIdController(getVehicleService, vehicleExceptionFilter, vehicleResponseMapper)
+	listVehiclesService := listvehicles.NewListVehiclesService(gormVehiclesRepository, vehicleMapper)
+	listVehiclesController := controllers.NewListVehiclesController(listVehiclesService, vehicleExceptionFilter)
+	updateVehicleService := updatevehicle.NewUpdateVehicleService(gormVehiclesRepository, vehicleMapper)
+	updateVehicleController := controllers.NewUpdateVehicleController(updateVehicleService, vehicleExceptionFilter, vehicleResponseMapper)
 	paymentsService := services2.NewPaymentsService(settings)
-	sellVehicleCommand := commands.NewSellVehicleCommand(paymentsService, gormVehiclesRepository)
-	sellVehicleController := controllers.NewSellVehicleController(sellVehicleCommand)
+	sellVehicleService := sellvehicle.NewSellVehicleService(gormVehiclesRepository, paymentsService)
+	sellVehicleController := controllers.NewSellVehicleController(sellVehicleService, vehicleExceptionFilter)
 	module := vehicles.NewModule(saveVehicleController, getVehicleByIdController, listVehiclesController, updateVehicleController, sellVehicleController)
 	v := newModules(module)
 	app := NewApp(gooseMigrationService, settings, v)

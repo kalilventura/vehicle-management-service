@@ -6,15 +6,14 @@ import (
 	shared "github.com/kalilventura/vehicle-management/internal/shared/domain/entities"
 	"github.com/kalilventura/vehicle-management/internal/shared/infrastructure/controllers"
 	"github.com/kalilventura/vehicle-management/internal/vehicles/application/use-cases/list-vehicles"
-	"github.com/kalilventura/vehicle-management/internal/vehicles/domain/entities/dtos"
-	"github.com/kalilventura/vehicle-management/internal/vehicles/infrastructure/controllers/requests"
-	"github.com/kalilventura/vehicle-management/internal/vehicles/infrastructure/controllers/responses"
+	"github.com/kalilventura/vehicle-management/internal/vehicles/presentation/controllers/requests"
+	"github.com/kalilventura/vehicle-management/internal/vehicles/presentation/controllers/responses"
 	"github.com/kalilventura/vehicle-management/internal/vehicles/presentation/filters"
 	"github.com/labstack/echo/v4"
 )
 
 type ListVehiclesController struct {
-	service        *listvehicles.ListVehiclesService
+	service         *listvehicles.ListVehiclesService
 	exceptionFilter *filters.VehicleExceptionFilter
 }
 
@@ -23,7 +22,7 @@ func NewListVehiclesController(
 	exceptionFilter *filters.VehicleExceptionFilter,
 ) *ListVehiclesController {
 	return &ListVehiclesController{
-		service:        service,
+		service:         service,
 		exceptionFilter: exceptionFilter,
 	}
 }
@@ -96,4 +95,3 @@ func (ctrl *ListVehiclesController) GetQueryParams(ectx echo.Context) (*requests
 	}
 	return searchParams, nil
 }
-

@@ -1,4 +1,4 @@
-package repositories
+package persistence
 
 import (
 	"errors"
@@ -8,7 +8,7 @@ import (
 	domainerr "github.com/kalilventura/vehicle-management/internal/shared/domain/errors"
 	"github.com/kalilventura/vehicle-management/internal/vehicles/domain/entities"
 	"github.com/kalilventura/vehicle-management/internal/vehicles/domain/entities/dtos"
-	"github.com/kalilventura/vehicle-management/internal/vehicles/infrastructure/persistence/mappers"
+	"github.com/kalilventura/vehicle-management/internal/vehicles/infrastructure/repositories/mappers"
 	"github.com/kalilventura/vehicle-management/internal/vehicles/infrastructure/repositories/models"
 	"gorm.io/gorm"
 )

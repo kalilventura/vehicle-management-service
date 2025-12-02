@@ -6,16 +6,14 @@ import (
 	shared "github.com/kalilventura/vehicle-management/internal/shared/domain/entities"
 	"github.com/kalilventura/vehicle-management/internal/shared/infrastructure/controllers"
 	"github.com/kalilventura/vehicle-management/internal/vehicles/application/use-cases/update-vehicle"
-	"github.com/kalilventura/vehicle-management/internal/vehicles/domain/entities"
-	"github.com/kalilventura/vehicle-management/internal/vehicles/infrastructure/controllers/requests"
-	"github.com/kalilventura/vehicle-management/internal/vehicles/infrastructure/controllers/responses"
+	"github.com/kalilventura/vehicle-management/internal/vehicles/presentation/controllers/requests"
 	"github.com/kalilventura/vehicle-management/internal/vehicles/presentation/filters"
 	"github.com/kalilventura/vehicle-management/internal/vehicles/presentation/mappers"
 	"github.com/labstack/echo/v4"
 )
 
 type UpdateVehicleController struct {
-	service        *updatevehicle.UpdateVehicleService
+	service         *updatevehicle.UpdateVehicleService
 	exceptionFilter *filters.VehicleExceptionFilter
 	responseMapper  *mappers.VehicleResponseMapper
 }
@@ -26,9 +24,9 @@ func NewUpdateVehicleController(
 	responseMapper *mappers.VehicleResponseMapper,
 ) *UpdateVehicleController {
 	return &UpdateVehicleController{
-		service:        service,
+		service:         service,
 		exceptionFilter: exceptionFilter,
-		responseMapper: responseMapper,
+		responseMapper:  responseMapper,
 	}
 }
 

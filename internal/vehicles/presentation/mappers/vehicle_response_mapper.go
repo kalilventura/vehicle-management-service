@@ -2,7 +2,7 @@ package mappers
 
 import (
 	"github.com/kalilventura/vehicle-management/internal/vehicles/application/dtos"
-	"github.com/kalilventura/vehicle-management/internal/vehicles/infrastructure/controllers/responses"
+	"github.com/kalilventura/vehicle-management/internal/vehicles/presentation/controllers/responses"
 )
 
 // VehicleResponseMapper maps application DTOs to presentation responses

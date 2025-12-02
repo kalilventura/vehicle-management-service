@@ -6,7 +6,7 @@ import (
 	shared "github.com/kalilventura/vehicle-management/internal/shared/domain/entities"
 	"github.com/kalilventura/vehicle-management/internal/shared/infrastructure/controllers"
 	"github.com/kalilventura/vehicle-management/internal/vehicles/application/use-cases/sell-vehicle"
-	"github.com/kalilventura/vehicle-management/internal/vehicles/infrastructure/controllers/requests"
+	"github.com/kalilventura/vehicle-management/internal/vehicles/presentation/controllers/requests"
 	"github.com/kalilventura/vehicle-management/internal/vehicles/presentation/filters"
 	"github.com/labstack/echo/v4"
 )

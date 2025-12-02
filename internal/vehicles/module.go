@@ -2,7 +2,7 @@ package vehicles
 
 import (
 	"github.com/kalilventura/vehicle-management/internal/shared/domain/entities"
-	"github.com/kalilventura/vehicle-management/internal/vehicles/infrastructure/controllers"
+	"github.com/kalilventura/vehicle-management/internal/vehicles/presentation/controllers"
 )
 
 type Module struct {

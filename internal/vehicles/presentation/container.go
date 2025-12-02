@@ -2,6 +2,7 @@ package presentation
 
 import (
 	"github.com/google/wire"
+	"github.com/kalilventura/vehicle-management/internal/vehicles/presentation/controllers"
 	"github.com/kalilventura/vehicle-management/internal/vehicles/presentation/filters"
 	"github.com/kalilventura/vehicle-management/internal/vehicles/presentation/mappers"
 )
@@ -10,5 +11,6 @@ import (
 var Container = wire.NewSet(
 	filters.NewVehicleExceptionFilter,
 	mappers.NewVehicleResponseMapper,
+	controllers.Container,
 )
 

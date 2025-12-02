@@ -6,14 +6,13 @@ import (
 	shared "github.com/kalilventura/vehicle-management/internal/shared/domain/entities"
 	"github.com/kalilventura/vehicle-management/internal/shared/infrastructure/controllers"
 	"github.com/kalilventura/vehicle-management/internal/vehicles/application/use-cases/get-vehicle"
-	"github.com/kalilventura/vehicle-management/internal/vehicles/infrastructure/controllers/responses"
 	"github.com/kalilventura/vehicle-management/internal/vehicles/presentation/filters"
 	"github.com/kalilventura/vehicle-management/internal/vehicles/presentation/mappers"
 	"github.com/labstack/echo/v4"
 )
 
 type GetVehicleByIdController struct {
-	service        *getvehicle.GetVehicleService
+	service         *getvehicle.GetVehicleService
 	exceptionFilter *filters.VehicleExceptionFilter
 	responseMapper  *mappers.VehicleResponseMapper
 }
@@ -24,9 +23,9 @@ func NewGetVehicleByIdController(
 	responseMapper *mappers.VehicleResponseMapper,
 ) *GetVehicleByIdController {
 	return &GetVehicleByIdController{
-		service:        service,
+		service:         service,
 		exceptionFilter: exceptionFilter,
-		responseMapper: responseMapper,
+		responseMapper:  responseMapper,
 	}
 }
 

@@ -1,6 +1,6 @@
 //go:build integration
 
-package repositories_test
+package persistence_test
 
 import (
 	"context"
@@ -62,7 +62,7 @@ func (suite *GormVehiclesRepositoryTestSuite) TestSuccessfully() {
 		transaction := suite.db.Begin()
 		defer transaction.Rollback()
 
-		repository := repositories.NewGormVehiclesRepository(transaction)
+		repository := persistence.NewGormVehiclesRepository(transaction)
 
 		// when
 		err := repository.Save(&vehicle)
@@ -79,7 +79,7 @@ func (suite *GormVehiclesRepositoryTestSuite) TestError() {
 		transaction := suite.db.Begin()
 		defer transaction.Rollback()
 
-		repository := repositories.NewGormVehiclesRepository(transaction)
+		repository := persistence.NewGormVehiclesRepository(transaction)
 
 		// when
 		err := repository.Save(&vehicle)
@@ -94,7 +94,7 @@ func (suite *GormVehiclesRepositoryTestSuite) TestError() {
 		transaction := suite.db.Begin()
 		defer transaction.Rollback()
 
-		repository := repositories.NewGormVehiclesRepository(transaction)
+		repository := persistence.NewGormVehiclesRepository(transaction)
 
 		// when
 		err := repository.Update(&vehicle)
@@ -108,7 +108,7 @@ func (suite *GormVehiclesRepositoryTestSuite) TestError() {
 		transaction := suite.db.Begin()
 		defer transaction.Rollback()
 
-		repository := repositories.NewGormVehiclesRepository(transaction)
+		repository := persistence.NewGormVehiclesRepository(transaction)
 
 		// when
 		_, err := repository.GetByID("")
@@ -123,7 +123,7 @@ func (suite *GormVehiclesRepositoryTestSuite) TestError() {
 		dialector := postgres.Open("")
 		transaction, _ := gorm.Open(dialector, &gorm.Config{})
 
-		repository := repositories.NewGormVehiclesRepository(transaction)
+		repository := persistence.NewGormVehiclesRepository(transaction)
 
 		// when
 		_, err := repository.FindWithFilters(input)

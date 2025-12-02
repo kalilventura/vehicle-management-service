@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 
 	"github.com/brianvoe/gofakeit/v7"
-	"github.com/kalilventura/vehicle-management/internal/vehicles/infrastructure/controllers/requests"
+	"github.com/kalilventura/vehicle-management/internal/vehicles/presentation/controllers/requests"
 	"github.com/kalilventura/vehicle-management/test/shared/domain/builders"
 )
 
