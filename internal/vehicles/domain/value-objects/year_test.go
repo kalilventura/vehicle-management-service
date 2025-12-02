@@ -1,12 +1,12 @@
 //go:build unit
 
-package dtos_test
+package valueobjects_test
 
 import (
 	"testing"
 	"time"
 
-	"github.com/kalilventura/vehicle-management/internal/vehicles/domain/entities/dtos"
+	valueobjects "github.com/kalilventura/vehicle-management/internal/vehicles/domain/value-objects"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -17,22 +17,20 @@ func TestYear(t *testing.T) {
 		tests := []struct {
 			name  string
 			input int
-			want  dtos.Year
 		}{
-			{"minimum valid year", 1900, dtos.Year(1900)},
-			{"current year", currentYear, dtos.Year(currentYear)},
-			{"next year", currentYear + 1, dtos.Year(currentYear + 1)},
-			{"mid-century year", 1950, dtos.Year(1950)},
+			{"minimum valid year", 1900},
+			{"current year", currentYear},
+			{"next year", currentYear + 1},
+			{"mid-century year", 1950},
 		}
 
 		for _, tt := range tests {
 			t.Run(tt.name, func(t *testing.T) {
 				// given & when
-				year, err := dtos.NewYear(tt.input)
+				year, err := valueobjects.NewYear(tt.input)
 
 				// then
 				assert.NoError(t, err)
-				assert.Equal(t, tt.want, year)
 				assert.Equal(t, tt.input, year.Value())
 			})
 		}
@@ -53,7 +51,7 @@ func TestYear(t *testing.T) {
 		for _, tt := range tests {
 			t.Run(tt.name, func(t *testing.T) {
 				// given & when
-				_, err := dtos.NewYear(tt.input)
+				_, err := valueobjects.NewYear(tt.input)
 
 				// then
 				assert.Error(t, err)
@@ -67,7 +65,7 @@ func TestYear(t *testing.T) {
 		testValue := 2023
 
 		// when
-		year, _ := dtos.NewYear(testValue)
+		year, _ := valueobjects.NewYear(testValue)
 		value := year.Value()
 
 		// then
@@ -78,7 +76,7 @@ func TestYear(t *testing.T) {
 	t.Run("should handle edge cases", func(t *testing.T) {
 		t.Run("minimum valid year (1900)", func(t *testing.T) {
 			// given & when
-			year, err := dtos.NewYear(1900)
+			year, err := valueobjects.NewYear(1900)
 
 			// then
 			assert.NoError(t, err)
@@ -87,7 +85,7 @@ func TestYear(t *testing.T) {
 
 		t.Run("maximum valid year (current+1)", func(t *testing.T) {
 			// given & when
-			year, err := dtos.NewYear(currentYear + 1)
+			year, err := valueobjects.NewYear(currentYear + 1)
 
 			// then
 			assert.NoError(t, err)

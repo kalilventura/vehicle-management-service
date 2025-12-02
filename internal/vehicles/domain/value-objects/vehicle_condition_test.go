@@ -1,12 +1,12 @@
 //go:build unit
 
-package dtos_test
+package valueobjects_test
 
 import (
 	"strings"
 	"testing"
 
-	"github.com/kalilventura/vehicle-management/internal/vehicles/domain/entities/dtos"
+	valueobjects "github.com/kalilventura/vehicle-management/internal/vehicles/domain/value-objects"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -15,20 +15,20 @@ func TestCondition(t *testing.T) {
 		tests := []struct {
 			name  string
 			input string
-			want  dtos.Condition
+			want  valueobjects.VehicleCondition
 		}{
-			{"new condition", "new", dtos.New},
-			{"used condition", "used", dtos.Used},
-			{"demonstration condition", "demonstration", dtos.Demonstration},
+			{"new condition", "new", valueobjects.NewCondition()},
+			{"used condition", "used", valueobjects.UsedCondition()},
+			{"demonstration condition", "demonstration", valueobjects.DemonstrationCondition()},
 
-			{"uppercase NEW", "NEW", dtos.New},
-			{"mixed case UsEd", "UsEd", dtos.Used},
+			{"uppercase NEW", "NEW", valueobjects.NewCondition()},
+			{"mixed case UsEd", "UsEd", valueobjects.UsedCondition()},
 		}
 
 		for _, tt := range tests {
 			t.Run(tt.name, func(t *testing.T) {
 				// given & when
-				condition, err := dtos.NewCondition(tt.input)
+				condition, err := valueobjects.NewVehicleCondition(tt.input)
 
 				// then
 				assert.NoError(t, err)
@@ -54,7 +54,7 @@ func TestCondition(t *testing.T) {
 		for _, tt := range tests {
 			t.Run(tt.name, func(t *testing.T) {
 				// given & when
-				_, err := dtos.NewCondition(tt.input)
+				_, err := valueobjects.NewVehicleCondition(tt.input)
 
 				// then
 				assert.Error(t, err)
@@ -64,19 +64,19 @@ func TestCondition(t *testing.T) {
 	})
 
 	t.Run("should expose correct constant values", func(t *testing.T) {
-		assert.Equal(t, "new", dtos.New.Value())
-		assert.Equal(t, "used", dtos.Used.Value())
-		assert.Equal(t, "demonstration", dtos.Demonstration.Value())
+		assert.Equal(t, "new", valueobjects.ConditionNew)
+		assert.Equal(t, "used", valueobjects.ConditionUsed)
+		assert.Equal(t, "demonstration", valueobjects.ConditionDemonstration)
 	})
 
 	t.Run("should be case insensitive when creating", func(t *testing.T) {
 		// given & when
-		c1, _ := dtos.NewCondition("NEW")
-		c2, _ := dtos.NewCondition("new")
-		c3, _ := dtos.NewCondition("New")
+		c1, _ := valueobjects.NewVehicleCondition("NEW")
+		c2, _ := valueobjects.NewVehicleCondition("new")
+		c3, _ := valueobjects.NewVehicleCondition("New")
 
 		// then
-		assert.Equal(t, dtos.New, c1)
+		assert.Equal(t, valueobjects.ConditionNew, c1)
 		assert.Equal(t, c1, c2)
 		assert.Equal(t, c2, c3)
 		assert.Equal(t, "new", c1.Value())

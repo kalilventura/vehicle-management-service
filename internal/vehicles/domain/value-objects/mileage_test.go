@@ -1,11 +1,11 @@
 //go:build unit
 
-package dtos_test
+package valueobjects_test
 
 import (
 	"testing"
 
-	"github.com/kalilventura/vehicle-management/internal/vehicles/domain/entities/dtos"
+	valueobjects "github.com/kalilventura/vehicle-management/internal/vehicles/domain/value-objects"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -14,22 +14,20 @@ func TestMileage(t *testing.T) {
 		tests := []struct {
 			name  string
 			input int
-			want  dtos.Mileage
 		}{
-			{"zero mileage", 0, dtos.Mileage(0)},
-			{"low mileage", 1000, dtos.Mileage(1000)},
-			{"high mileage", 100000, dtos.Mileage(100000)},
-			{"max int value", 1<<31 - 1, dtos.Mileage(1<<31 - 1)},
+			{"zero mileage", 0},
+			{"low mileage", 1000},
+			{"high mileage", 100000},
+			{"max int value", 1<<31 - 1},
 		}
 
 		for _, tt := range tests {
 			t.Run(tt.name, func(t *testing.T) {
 				// given & when
-				mileage, err := dtos.NewMileage(tt.input)
+				mileage, err := valueobjects.NewMileage(tt.input)
 
 				// then
 				assert.NoError(t, err)
-				assert.Equal(t, tt.want, mileage)
 				assert.Equal(t, tt.input, mileage.Value())
 			})
 		}
@@ -48,7 +46,7 @@ func TestMileage(t *testing.T) {
 		for _, tt := range tests {
 			t.Run(tt.name, func(t *testing.T) {
 				// given & when
-				_, err := dtos.NewMileage(tt.input)
+				_, err := valueobjects.NewMileage(tt.input)
 
 				// then
 				assert.Error(t, err)
@@ -62,11 +60,21 @@ func TestMileage(t *testing.T) {
 		testValue := 50000
 
 		// when
-		mileage, _ := dtos.NewMileage(testValue)
+		mileage, _ := valueobjects.NewMileage(testValue)
 		value := mileage.Value()
 
 		// then
 		assert.Equal(t, testValue, value)
 		assert.IsType(t, 0, value)
+	})
+
+	t.Run("should check if mileage is greater than value", func(t *testing.T) {
+		// given
+		mileage, _ := valueobjects.NewMileage(10000)
+
+		// then
+		assert.True(t, mileage.IsGreaterThan(5000))
+		assert.False(t, mileage.IsGreaterThan(10000))
+		assert.False(t, mileage.IsGreaterThan(15000))
 	})
 }

@@ -1,12 +1,12 @@
 //go:build unit
 
-package dtos_test
+package valueobjects_test
 
 import (
 	"strings"
 	"testing"
 
-	"github.com/kalilventura/vehicle-management/internal/vehicles/domain/entities/dtos"
+	valueobjects "github.com/kalilventura/vehicle-management/internal/vehicles/domain/value-objects"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -15,24 +15,21 @@ func TestTransmission(t *testing.T) {
 		tests := []struct {
 			name  string
 			input string
-			want  dtos.Transmission
 		}{
-			{"manual transmission", "manual", dtos.Manual},
-			{"automatic transmission", "automatic", dtos.Automatic},
-			{"CVT transmission", "cvt", dtos.CVT},
-
-			{"uppercase MANUAL", "MANUAL", dtos.Manual},
-			{"mixed case AuToMaTiC", "AuToMaTiC", dtos.Automatic},
+			{"manual transmission", "manual"},
+			{"automatic transmission", "automatic"},
+			{"CVT transmission", "cvt"},
+			{"uppercase MANUAL", "MANUAL"},
+			{"mixed case AuToMaTiC", "AuToMaTiC"},
 		}
 
 		for _, tt := range tests {
 			t.Run(tt.name, func(t *testing.T) {
 				// given & when
-				transmission, err := dtos.NewTransmission(tt.input)
+				transmission, err := valueobjects.NewTransmission(tt.input)
 
 				// then
 				assert.NoError(t, err)
-				assert.Equal(t, tt.want, transmission)
 				assert.Equal(t, strings.ToLower(tt.input), transmission.Value())
 			})
 		}
@@ -54,7 +51,7 @@ func TestTransmission(t *testing.T) {
 		for _, tt := range tests {
 			t.Run(tt.name, func(t *testing.T) {
 				// given & when
-				_, err := dtos.NewTransmission(tt.input)
+				_, err := valueobjects.NewTransmission(tt.input)
 
 				// then
 				assert.Error(t, err)
@@ -64,27 +61,20 @@ func TestTransmission(t *testing.T) {
 	})
 
 	t.Run("should expose correct constant values", func(t *testing.T) {
-		assert.Equal(t, "manual", dtos.Manual.Value())
-		assert.Equal(t, "automatic", dtos.Automatic.Value())
-		assert.Equal(t, "cvt", dtos.CVT.Value())
+		assert.Equal(t, "manual", valueobjects.TransmissionManual)
+		assert.Equal(t, "automatic", valueobjects.TransmissionAutomatic)
+		assert.Equal(t, "cvt", valueobjects.TransmissionCVT)
 	})
 
 	t.Run("should be case insensitive when creating", func(t *testing.T) {
 		// given & when
-		t1, _ := dtos.NewTransmission("MANUAL")
-		t2, _ := dtos.NewTransmission("manual")
-		t3, _ := dtos.NewTransmission("Manual")
+		t1, _ := valueobjects.NewTransmission("MANUAL")
+		t2, _ := valueobjects.NewTransmission("manual")
+		t3, _ := valueobjects.NewTransmission("Manual")
 
 		// then
-		assert.Equal(t, dtos.Manual, t1)
+		assert.Equal(t, "manual", t1.Value())
 		assert.Equal(t, t1, t2)
 		assert.Equal(t, t2, t3)
-		assert.Equal(t, "manual", t1.Value())
-	})
-
-	t.Run("should maintain original case in constants", func(t *testing.T) {
-		assert.Equal(t, "manual", dtos.Manual.Value())
-		assert.Equal(t, "automatic", dtos.Automatic.Value())
-		assert.Equal(t, "cvt", dtos.CVT.Value())
 	})
 }
